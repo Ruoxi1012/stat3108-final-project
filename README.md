@@ -98,3 +98,12 @@ Pretrained audio models are part of the scientific method. Generative AI tools m
 - [Confirmed innovation and measurement plan](research/innovation_plan.md)
 - [Experiment blueprint](research/experiment_blueprint.md)
 - [Weekly GitHub plan](planning/weekly_github_plan.md)
+
+
+## First executable contribution (Cici)
+
+The [data audit and paired noise pipeline](code/README.md) now provides executable
+WAV quality checks, label counts, duplicate checks, source hashes, and reproducible
+original/noisy/enhanced audio conditions. Follow its setup and test commands.
+The current enhancer is a spectral-subtraction control using known added noise;
+AI enhancement and classification comparisons remain planned experiments.

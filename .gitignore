@@ -15,3 +15,10 @@
 *.ckpt
 *.pth
 *.pt
+
+# Local Python environment and generated audio/audits
+.venv/
+__pycache__/
+*.pyc
+/data/processed/
+/results/local/
