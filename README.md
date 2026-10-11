@@ -98,6 +98,7 @@ Pretrained audio models are part of the scientific method. Generative AI tools m
 - [Confirmed innovation and measurement plan](research/innovation_plan.md)
 - [Experiment blueprint](research/experiment_blueprint.md)
 - [Weekly GitHub plan](planning/weekly_github_plan.md)
+- [Team responsibilities and contribution ledger](planning/team_contributions.md)
 
 
 ## First executable contribution (Cici)
