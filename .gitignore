@@ -1,0 +1,17 @@
+# Local course source documents (kept in the project workspace, not published)
+/docs/course-materials/*.pdf
+
+# Local secrets and OS metadata
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# Downloaded datasets, model weights, and generated training artifacts
+/data/raw/
+/data/external/
+/checkpoints/
+/artifacts/
+*.ckpt
+*.pth
+*.pt
