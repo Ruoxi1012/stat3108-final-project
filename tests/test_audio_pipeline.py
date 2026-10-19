@@ -43,7 +43,15 @@ class AudioTests(unittest.TestCase):
                     (root/f'{breed}_{split}_labels.csv').write_text(f'audio_id,arousal,valence\n{audio_id},High,Positive\n')
             summary = pipeline.audit(root,root/'audit')
             self.assertEqual(summary['readable'],4)
+            self.assertEqual(summary['audio_qa']['sample_rates'], {'16000': 4})
+            self.assertEqual(summary['audio_qa']['channels'], {'1': 4})
+            self.assertAlmostEqual(summary['audio_qa']['duration_seconds']['median'], 0.0625)
             self.assertTrue(any('crosses official splits' in p['reason'] for p in summary['issues']))
+            self.assertFalse(any('conflicting labels' in p['reason'] for p in summary['issues']))
+            self.assertEqual(summary['modeling_policy']['included_train_clips'],0)
+            self.assertEqual(len(summary['modeling_policy']['excluded_train_clips']),2)
+            manifest = json.loads((root/'audit/manifest.json').read_text())
+            self.assertEqual({r['model_status'] for r in manifest if r['split']=='train'}, {'exclude'})
             noise = root/'noise.wav'
             wavfile.write(noise,8000,np.random.default_rng(9).normal(0,.05,1000).astype(np.float32))
             records = pipeline.pairs(root/'audit/manifest.json',noise,root/'pairs',5,3108)
@@ -55,6 +63,13 @@ class AudioTests(unittest.TestCase):
                 self.assertEqual(len(audio),1000)
             with self.assertRaises(ValueError):
                 pipeline.pairs(root/'audit/manifest.json',noise,root/'pairs',5,3108)
+            subset = pipeline.pairs(root/'audit/manifest.json',noise,root/'subset-pairs',5,3108,
+                                    ['husky_train_00000'])
+            self.assertEqual(len(subset),4)
+            self.assertAlmostEqual(subset[0]['achieved_snr_db'],5,places=10)
+            with self.assertRaises(ValueError):
+                pipeline.pairs(root/'audit/manifest.json',noise,root/'missing-pairs',5,3108,
+                               ['missing_audio_id'])
             source = root/'husky/train/husky_train_00000.wav'
             source.write_bytes(b'changed')
             with self.assertRaises(ValueError):

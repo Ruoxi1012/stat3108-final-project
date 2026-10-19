@@ -37,6 +37,32 @@ def read_audio(path):
     return rate, audio, channels
 
 
+def summarize_audio(rows):
+    """Return compact aggregate QA statistics for readable manifest rows."""
+    readable = [row for row in rows if row.get('status') == 'ok']
+    if not readable:
+        return {}
+
+    def distribution(field):
+        values = np.asarray([row[field] for row in readable], dtype=float)
+        return {
+            'min': float(np.min(values)),
+            'median': float(np.median(values)),
+            'p95': float(np.percentile(values, 95)),
+            'max': float(np.max(values)),
+        }
+
+    return {
+        'sample_rates': dict(Counter(str(row['sample_rate']) for row in readable)),
+        'channels': dict(Counter(str(row['channels']) for row in readable)),
+        'duration_seconds': distribution('duration_seconds'),
+        'total_duration_hours': float(sum(row['duration_seconds'] for row in readable) / 3600),
+        'rms': distribution('rms'),
+        'peak': distribution('peak'),
+        'files_with_clipped_samples': sum(row['clipped_fraction'] > 0 for row in readable),
+    }
+
+
 def audit(root, output):
     root, output = Path(root), Path(output)
     rows, problems, label_hashes = [], [], {}
@@ -70,7 +96,13 @@ def audit(root, output):
                             raise ValueError('Git LFS pointer: actual audio not downloaded')
                         rate, audio, channels = read_audio(path)
                         digest = hashlib.sha256(np.asarray(audio, dtype='<f8').tobytes() + str(rate).encode()).hexdigest()
-                        seen_audio[digest].append({'audio_id': audio_id, 'split': split, 'breed': breed})
+                        seen_audio[digest].append({
+                            'audio_id': audio_id,
+                            'split': split,
+                            'breed': breed,
+                            'arousal': item['arousal'],
+                            'valence': item['valence'],
+                        })
                         row.update(sample_rate=rate, channels=channels, duration_seconds=len(audio)/rate,
                                    rms=float(np.sqrt(np.mean(audio**2))), peak=float(np.max(np.abs(audio))),
                                    clipped_fraction=float(np.mean(np.abs(audio) >= 1)), sha256=sha256(path), status='ok')
@@ -79,11 +111,41 @@ def audit(root, output):
                         problems.append({'audio_id': audio_id, 'reason': str(error)})
                     rows.append(row)
     duplicates = [group for group in seen_audio.values() if len(group) > 1]
+    for row in rows:
+        row['model_status'] = 'include' if row['status'] == 'ok' else 'unavailable'
     for group in duplicates:
         if len({item['split'] for item in group}) > 1:
             problems.append({'reason': 'identical decoded audio crosses official splits', 'clips': group})
+            for item in group:
+                if item['split'] == 'train':
+                    row = next(row for row in rows if row['audio_id'] == item['audio_id'])
+                    row['model_status'] = 'exclude'
+                    row['model_exclusion_reason'] = 'exact decoded duplicate appears in official test'
+        if len({(item['arousal'], item['valence']) for item in group}) > 1:
+            problems.append({'reason': 'identical decoded audio has conflicting labels', 'clips': group})
+        if {item['split'] for item in group} == {'train'}:
+            labels = {(item['arousal'], item['valence']) for item in group}
+            ordered = sorted(group, key=lambda item: item['audio_id'])
+            excluded = ordered if len(labels) > 1 else ordered[1:]
+            reason = ('conflicting labels on identical decoded training audio' if len(labels) > 1
+                      else 'repeated identical training audio; canonical ID retained')
+            for item in excluded:
+                row = next(row for row in rows if row['audio_id'] == item['audio_id'])
+                row['model_status'] = 'exclude'
+                row['model_exclusion_reason'] = reason
+    excluded_train = [
+        {'audio_id': row['audio_id'], 'reason': row['model_exclusion_reason']}
+        for row in rows if row['split'] == 'train' and row['model_status'] == 'exclude'
+    ]
     summary = {'label_sha256': label_hashes, 'clips': len(rows), 'readable': sum(r['status']=='ok' for r in rows),
+               'audio_qa': summarize_audio(rows),
                'class_counts': {}, 'duplicates': duplicates, 'issues': problems,
+               'modeling_policy': {
+                   'included_train_clips': sum(r['split']=='train' and r['model_status']=='include' for r in rows),
+                   'excluded_train_clips': excluded_train,
+                   'official_test_clips_retained': sum(r['split']=='test' and r['status']=='ok' for r in rows),
+                   'note': 'Remove train-side exact-test duplicates; exclude conflicting train duplicates; keep one canonical copy of same-label train duplicates. Retain the released test set and report duplicate sensitivity.'
+               },
                'limitations': 'No public dog IDs; validation cannot be certified dog-disjoint. Exact decoded duplicates only; near-duplicate review remains manual.'}
     for breed in ('husky', 'shiba'):
         for split in ('train', 'test'):
@@ -127,12 +189,19 @@ def enhance(audio, noise, rate):
     return restored[:len(audio)]
 
 
-def pairs(manifest, noise_path, output, snr_db, seed):
+def pairs(manifest, noise_path, output, snr_db, seed, audio_ids=None):
     rows = json.loads(Path(manifest).read_text())
     if any(r['status'] != 'ok' for r in rows):
         raise ValueError('resolve audit exclusions before generating pairs')
     if not rows or len({r['audio_id'] for r in rows}) != len(rows):
         raise ValueError('manifest must contain unique source IDs')
+    if audio_ids:
+        requested = set(audio_ids)
+        available = {row['audio_id'] for row in rows}
+        missing = sorted(requested - available)
+        if missing:
+            raise ValueError(f'unknown audio IDs: {", ".join(missing)}')
+        rows = [row for row in rows if row['audio_id'] in requested]
     noise_rate, background, _ = read_audio(Path(noise_path))
     output = Path(output)
     if output.exists():
@@ -149,6 +218,7 @@ def pairs(manifest, noise_path, output, snr_db, seed):
         noise = resample_poly(background, rate//divisor, noise_rate//divisor)
         clip_seed = int.from_bytes(hashlib.sha256(f"{seed}:{row['audio_id']}".encode()).digest()[:8], 'big')
         reference, noisy, added, gain = mix_noise(audio, noise, snr_db, clip_seed)
+        achieved_snr_db = float(10*np.log10(np.mean(reference**2)/np.mean((noisy-reference)**2)))
         conditions = {'original': reference, 'noisy': noisy, 'enhanced': enhance(noisy, added, rate),
                       'original_enhanced': enhance(reference, added, rate)}
         for condition, signal in conditions.items():
@@ -158,7 +228,8 @@ def pairs(manifest, noise_path, output, snr_db, seed):
             wavfile.write(destination, rate, signal.astype(np.float32))
             records.append(dict(row, condition=condition, path=str(destination.resolve()), source_sha256=row['sha256'],
                                 sha256=sha256(destination), requested_snr_db=snr_db, seed=clip_seed, common_gain=gain,
-                                noise_sha256=sha256(Path(noise_path)), peak=float(np.max(np.abs(signal)))))
+                                achieved_snr_db=achieved_snr_db, noise_sha256=sha256(Path(noise_path)),
+                                peak=float(np.max(np.abs(signal)))))
     (output/'pairs.json').write_text(json.dumps(records, indent=2)+'\n')
     (output/'config.json').write_text(json.dumps({'seed':seed,'snr_db':snr_db,'enhancer':'oracle spectral subtraction, power floor=0.02, FFT<=512, 50% overlap',
         'numpy':np.__version__, 'scipy':scipy.__version__, 'manifest_sha256':sha256(Path(manifest)), 'noise_path':str(Path(noise_path).resolve()), 'note':'Known added-noise profile is an optimistic control; no real-world or AI enhancement claim.'}, indent=2)+'\n')
@@ -177,12 +248,14 @@ def main():
     command.add_argument('--output', required=True)
     command.add_argument('--snr-db', type=float, required=True)
     command.add_argument('--seed', type=int, default=3108)
+    command.add_argument('--audio-id', action='append', dest='audio_ids',
+                         help='generate only this source ID; repeat for multiple IDs')
     args = parser.parse_args()
     if args.command == 'audit':
         summary = audit(args.root, args.output)
         print(f"Audited {summary['clips']} clips; {summary['readable']} readable; {len(summary['issues'])} issues")
         return int(bool(summary['issues']))
-    records = pairs(args.manifest, args.noise, args.output, args.snr_db, args.seed)
+    records = pairs(args.manifest, args.noise, args.output, args.snr_db, args.seed, args.audio_ids)
     print(f'Wrote {len(records)} paired condition records')
     return 0
 

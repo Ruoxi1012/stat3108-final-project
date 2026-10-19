@@ -22,12 +22,20 @@ python code/audio_pipeline.py audit --root data/raw/EmotionalCanines --output re
 ```
 
 Outputs: `manifest.json` (per-record labels, hashes, audio QA, exclusions) and
-`audit.json` (class counts, label hashes, exact decoded duplicates, issues).
+`audit.json` (class counts, label hashes, aggregate audio QA, exact decoded
+duplicates, and issues).
 A nonzero exit means the audit found issues, including deviations from expected
 600 train / 100 test clips per breed. Inspect all issues before proceeding.
 No audio is silently repaired. Stereo is averaged for QA and paired generation.
 Dog IDs are unavailable; this tool does not certify new dog-disjoint splits.
 Near-duplicate detection and source-video review remain future work.
+
+For model fitting, use only manifest rows with `model_status: include`. The
+audit automatically excludes train-side copies of official-test audio, both
+members of conflicting-label training duplicates, and all but the canonical
+lexicographically first ID in a same-label training duplicate group. It retains
+the released test rows for the official score and records the policy in
+`audit.json`.
 
 ## Paired noise experiment
 
@@ -37,6 +45,17 @@ controls: 10 dB and 0 dB, each in a separate output directory).
 
 ```bash
 python code/audio_pipeline.py pairs --manifest results/local/audit/manifest.json --noise data/external/background.wav --output data/processed/noise-10db --snr-db 10 --seed 3108
+```
+
+For a smoke example instead of the full dataset, select one or more sources:
+
+```bash
+python code/audio_pipeline.py pairs \
+  --manifest results/local/audit/manifest.json \
+  --noise data/external/esc50/1-137296-A-16.wav \
+  --output data/processed/week2-example-10db \
+  --snr-db 10 --seed 3108 \
+  --audio-id husky_train_00000
 ```
 
 The source audio hash is checked before processing. A stable per-source seed
@@ -52,7 +71,8 @@ Four conditions preserve source labels and official split:
 - `enhanced`: spectral subtraction on the noisy version;
 - `original_enhanced`: enhancement safety check on the matched reference.
 
-`pairs.json` records provenance and condition for every WAV. `config.json`
+`pairs.json` records provenance, requested and achieved SNR, and condition for
+every WAV. `config.json`
 records the seed and processing settings. A fresh output directory is required.
 Audio and local outputs are ignored by Git.
 
