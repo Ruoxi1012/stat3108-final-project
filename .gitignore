@@ -22,3 +22,7 @@ __pycache__/
 *.pyc
 /data/processed/
 /results/local/
+
+# Local artifact build and validation files
+/.codex-build/
+/.codex-finalizer/
