@@ -66,10 +66,10 @@ We will report Husky and Shiba results separately as well as pooled results. Acc
 - [x] Initial field review and evidence matrix completed.
 - [x] Primary dataset and license verified.
 - [x] Leakage-safe evaluation protocol specified.
-- [ ] Reproducible environment and data audit.
+- [x] Reproducible environment and data audit (2026-10-18; issues documented below).
 - [ ] Baselines.
 - [ ] Pretrained representation comparison.
-- [ ] Paired original/noisy/enhanced experiment.
+- [ ] Full paired original/noisy/enhanced classification experiment (the generation smoke example is complete).
 - [ ] Calibrated confidence and uncertain-output rule.
 - [ ] Robustness, ablations, and error analysis.
 - [ ] Demo, presentation, and two-page report.
@@ -82,9 +82,9 @@ research/field_review.md          Prior work, limitations, and research gap
 research/experiment_blueprint.md  Frozen protocol and success criteria
 planning/weekly_github_plan.md    Weekly branches, PRs, and deliverables
 data/README.md                    Dataset provenance and retrieval
-code/                             Reproducible pipeline (to be implemented)
-results/                          Small tables and figures (to be generated)
-poster/                           Presentation artifact
+code/                             Reproducible audit and paired-audio pipeline
+results/                          Audits, small tables, and figures
+poster/                           Presentation artifact and checkpoints
 report/                           Two-page report
 ```
 
@@ -108,3 +108,14 @@ WAV quality checks, label counts, duplicate checks, source hashes, and reproduci
 original/noisy/enhanced audio conditions. Follow its setup and test commands.
 The current enhancer is a spectral-subtraction control using known added noise;
 AI enhancement and classification comparisons remain planned experiments.
+
+## Week 2 data checkpoint
+
+The full 1,400-clip release was audited on 2026-10-18. Every file decoded, but
+the audit found five groups of bitwise-equivalent decoded audio. Two groups cross
+the official Shiba train/test boundary, three groups carry conflicting labels,
+and one group falls into both categories.
+The predeclared resolution removes train-side leakage before fitting and retains
+the official test set for the primary score with a duplicate-sensitivity analysis.
+See [the Week 2 audit record](results/week2_data_audit.md) for exact IDs, hashes,
+class counts, audio QA, and the paired 10 dB / 0 dB smoke example.

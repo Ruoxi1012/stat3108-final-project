@@ -20,16 +20,42 @@ git lfs install
 git clone https://github.com/tmdang1101/EmotionalCanines.git data/raw/EmotionalCanines
 ```
 
-Before training, the project will add a reproducible audit command that records:
+The implemented audit command records:
 
 - label-file SHA-256 hashes;
 - number of readable clips and missing IDs;
 - sampling-rate, channel, duration, and amplitude distributions;
 - exact train/test class counts;
-- duplicate and near-duplicate checks;
+- exact decoded-audio duplicates;
 - any decoding failures.
 
-The dataset must not be silently repaired. Exclusions will be written to a manifest with a reason.
+Run it with:
+
+```bash
+python code/audio_pipeline.py audit \
+  --root data/raw/EmotionalCanines \
+  --output results/local/audit
+```
+
+The 2026-10-18 audit decoded all 1,400 clips and found five exact-duplicate
+groups. Two groups cross the official Shiba train/test boundary, three groups
+contain conflicting labels, and one group has both problems. The nonzero command exit is intentional:
+it makes these findings impossible to miss. The checked-in summary at
+`results/week2_data_audit.md` records the exact IDs and the resolution policy.
+Near-duplicate and source-video checks remain future work.
+
+The dataset must not be silently repaired. Local manifests and any exclusions
+must preserve the original IDs and state the reason. The generated manifest
+applies the fixed policy through `model_status`; 1,195 of the 1,200 released
+training rows remain eligible for fitting, while all 200 official test rows are
+retained for evaluation.
+
+## Background-noise source for the Week 2 smoke example
+
+The local example uses ESC-50 clip `1-137296-A-16.wav`, category `wind`, derived
+from “Rain And Wind On Glass” by Freesound user Benboncan under CC BY. ESC-50 is
+distributed under CC BY-NC 3.0. The clip and license stay under ignored
+`data/external/`; only provenance and hashes are committed.
 
 ## Data governance
 

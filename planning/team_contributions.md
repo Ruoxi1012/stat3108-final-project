@@ -1,6 +1,6 @@
 # Team Responsibilities and Contribution Ledger
 
-Last updated: **2026-10-11**
+Last updated: **2026-10-18**
 
 This file makes individual ownership visible while preserving peer review and shared understanding. It records completed work using Git commit evidence and assigns the next concrete deliverables. Responsibilities may change through a reviewed pull request rather than silently.
 
@@ -64,6 +64,17 @@ Working branch: create a task-specific `cici/...` branch for each new unit of wo
 - Jointly select final claims after reviewing confidence intervals and failure cases.
 - Rehearse the 10-minute presentation and share speaking and Q&A responsibilities.
 - Keep secrets, raw audio, checkpoints, and generated artifacts out of Git.
+
+## Week 2 checkpoint prepared for review
+
+The current `ruoxi/noise-evaluation` working tree contains an AI-assisted Week 2
+checkpoint: a full-dataset audit, explicit duplicate and conflicting-label
+findings, aggregate audio QA, selective paired-audio generation, a licensed
+wind-noise smoke example at 10 dB and 0 dB, documentation updates, and a
+presentation draft. These changes do not count as individual contribution
+evidence until a named team member reviews them, can explain them, commits them,
+and opens a pull request. The other member should run the documented tests and
+review the duplicate-resolution policy before approval.
 
 ## Contribution rule
 
