@@ -1,6 +1,6 @@
 # Team Responsibilities and Contribution Ledger
 
-Last updated: **2026-10-18**
+Last updated: **2026-10-27**
 
 This file makes individual ownership visible while preserving peer review and shared understanding. It records completed work using Git commit evidence and assigns the next concrete deliverables. Responsibilities may change through a reviewed pull request rather than silently.
 
@@ -12,22 +12,32 @@ This file makes individual ownership visible while preserving peer review and sh
 - Wrote the literature review, evidence matrix, and research-gap analysis.
 - Designed the unseen-dog, cross-breed, paired-noise, and confidence-aware evaluation protocol.
 - Added the weekly GitHub plan and dataset governance documentation.
+- Implemented the fixed development split, MFCC linear baselines, and the
+  three-seed small Log-Mel CNN.
+- Ran the first real official unseen-dog experiment and retained the finding
+  that the small CNN does not beat the MFCC linear SVM.
+- Generated per-breed metrics, ordinal metrics, confusion matrices, selection
+  traces, and a presentation-ready baseline figure.
 
 Git evidence:
 
 - `836f3c5` — `docs: define confirmed project innovations`
 - `d329015` — `research: add evidence review and evaluation protocol`
 - `5944fa0` — `chore: add weekly plan and data governance`
+- `83b05e4` — `feat: add leakage-aware baseline experiment`
+- `c8745d0` — `docs: explain honest baseline reproduction`
+- `b68e590` — `fix: average stochastic baseline across seeds`
+- `2108cfc` — `exp: record honest Week 3 baseline results`
 - Pull request: [#2](https://github.com/Ruoxi1012/stat3108-final-project/pull/2)
 
 ### Primary next responsibilities
 
-- Implement and document the majority, MFCC/eGeMAPS, and small-CNN baselines.
 - Run official unseen-dog and Husky-to-Shiba/Shiba-to-Husky evaluations without test-set tuning.
+- Add bootstrap confidence intervals and the official-test duplicate-sensitivity analysis.
 - Compare model performance on original, noise-added, and enhanced audio produced by the shared pipeline.
 - Produce confidence intervals, confusion matrices, and presentation-ready generalization/robustness figures.
 
-Working branch: `ruoxi/noise-evaluation`
+Working branch: `ruoxi/honest-baselines` (Week 3, awaiting peer review)
 
 ## Cici Zeng
 
@@ -65,16 +75,22 @@ Working branch: create a task-specific `cici/...` branch for each new unit of wo
 - Rehearse the 10-minute presentation and share speaking and Q&A responsibilities.
 - Keep secrets, raw audio, checkpoints, and generated artifacts out of Git.
 
-## Week 2 checkpoint prepared for review
+## Week 2 checkpoint
 
-The current `ruoxi/noise-evaluation` working tree contains an AI-assisted Week 2
-checkpoint: a full-dataset audit, explicit duplicate and conflicting-label
+Pull request [#4](https://github.com/Ruoxi1012/stat3108-final-project/pull/4)
+merged the AI-assisted Week 2 checkpoint: a full-dataset audit, explicit duplicate and conflicting-label
 findings, aggregate audio QA, selective paired-audio generation, a licensed
 wind-noise smoke example at 10 dB and 0 dB, documentation updates, and a
-presentation draft. These changes do not count as individual contribution
-evidence until a named team member reviews them, can explain them, commits them,
-and opens a pull request. The other member should run the documented tests and
-review the duplicate-resolution policy before approval.
+presentation draft.
+
+## Week 3 checkpoint prepared for review
+
+The `ruoxi/honest-baselines` branch contains the first real model experiment.
+All eight tests pass. The strongest official-test result is the MFCC linear SVM
+(arousal macro F1 0.490; valence 0.419); the small CNN is weaker and has visible
+seed variance. Cici should run the documented reproduction or smoke tests,
+review the fixed split and no-test-tuning logic, and confirm that both members
+can explain the negative CNN result before merge.
 
 ## Contribution rule
 
