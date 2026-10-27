@@ -52,6 +52,8 @@ MFCC_MELS = 40
 CNN_MELS = 48
 CNN_FRAMES = 400  # About four seconds; covers about 95% in the label-blind audit.
 CLASSICAL_C_GRID = (0.01, 0.1, 1.0, 10.0)
+RANDOM_BASELINE_SEEDS = tuple(range(3108, 3128))
+FEATURE_VERSION = "week3-v1"
 
 
 def sha256(path):
@@ -190,7 +192,9 @@ def build_features(rows, cache_path, manifest_hash):
     cache_path = Path(cache_path)
     if cache_path.exists():
         cached = np.load(cache_path, allow_pickle=False)
-        if str(cached["manifest_hash"]) == manifest_hash:
+        if ("feature_version" in cached.files
+                and str(cached["manifest_hash"]) == manifest_hash
+                and str(cached["feature_version"]) == FEATURE_VERSION):
             return list(cached["audio_ids"]), cached["mfcc"], cached["logmel"]
     audio_ids, mfcc_features, logmel_features = [], [], []
     for index, row in enumerate(rows, start=1):
@@ -204,6 +208,7 @@ def build_features(rows, cache_path, manifest_hash):
     np.savez_compressed(
         cache_path,
         manifest_hash=np.asarray(manifest_hash),
+        feature_version=np.asarray(FEATURE_VERSION),
         audio_ids=np.asarray(audio_ids),
         mfcc=np.stack(mfcc_features),
         logmel=np.stack(logmel_features),
@@ -435,7 +440,10 @@ def plot_official(summary, destination):
         axis.set_ylabel("Macro F1" if target == "arousal" else "")
         axis.grid(axis="y", alpha=0.2)
     axes[0].legend(frameon=False, fontsize=8)
-    figure.suptitle("Official unseen-dog baseline performance (n=200)\nCNN error bars show SD across three seeds")
+    figure.suptitle(
+        "Official unseen-dog baseline performance (n=200)\n"
+        "Error bars show run SD for stochastic baselines"
+    )
     figure.tight_layout()
     figure.savefig(destination, dpi=180, bbox_inches="tight")
     plt.close(figure)
@@ -477,6 +485,7 @@ def markdown_report(summary, selection, cnn_details):
         "validation, then the models were refit on all 1,195 eligible training clips",
         "before official testing. The CNN selected an epoch on validation for each of",
         "three seeds and was retrained on all eligible training clips for that many epochs.",
+        "Stratified-random values are means across 20 fixed seeds.",
         "",
         "## Reproduction",
         "",
@@ -540,15 +549,26 @@ def run(args):
         y_validation = encode_labels(validation_rows, target)
         y_all = encode_labels(eligible_train, target)
         y_official = encode_labels(official_rows, target)
-        for display, kind in (("Majority", "majority"), ("Stratified random", "stratified")):
+        raw_metrics.extend(evaluation_rows(
+            "Majority", args.split_seed, target, validation_rows, y_validation,
+            baseline_predictions(y_fit, len(y_validation), "majority", args.split_seed),
+            "validation",
+        ))
+        raw_metrics.extend(evaluation_rows(
+            "Majority", args.split_seed, target, official_rows, y_official,
+            baseline_predictions(y_all, len(y_official), "majority", args.split_seed),
+            "official_test",
+        ))
+        for random_seed in RANDOM_BASELINE_SEEDS:
+            target_offset = 0 if target == "arousal" else 1000
             raw_metrics.extend(evaluation_rows(
-                display, args.split_seed, target, validation_rows, y_validation,
-                baseline_predictions(y_fit, len(y_validation), kind, args.split_seed + (0 if target == "arousal" else 1)),
+                "Stratified random", random_seed, target, validation_rows, y_validation,
+                baseline_predictions(y_fit, len(y_validation), "stratified", random_seed + target_offset),
                 "validation",
             ))
             raw_metrics.extend(evaluation_rows(
-                display, args.split_seed, target, official_rows, y_official,
-                baseline_predictions(y_all, len(y_official), kind, args.split_seed + (10 if target == "arousal" else 11)),
+                "Stratified random", random_seed, target, official_rows, y_official,
+                baseline_predictions(y_all, len(y_official), "stratified", random_seed + target_offset + 100),
                 "official_test",
             ))
         for kind in ("MFCC logistic regression", "MFCC linear SVM"):
@@ -633,6 +653,7 @@ def run(args):
             "mfcc_mels": MFCC_MELS,
             "cnn_mels": CNN_MELS,
             "cnn_frames": CNN_FRAMES,
+            "feature_version": FEATURE_VERSION,
             "amplitude": "DC removal then per-clip peak normalization for spectral features",
         },
         "selection": selection,
