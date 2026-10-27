@@ -85,3 +85,36 @@ conditions. No classification improvement or real-dataset result is claimed.
 The synthetic tests verify achieved SNR, determinism, output duration, split
 provenance, source hash enforcement, duplicate leakage detection, silent-input
 rejection, and Git LFS pointer detection. They do not measure model accuracy.
+
+## Week 3 honest baselines
+
+Install the expanded pinned environment, regenerate the audit, and run the
+baseline experiment:
+
+```bash
+pip install -r requirements.txt
+python code/audio_pipeline.py audit \
+  --root data/raw/EmotionalCanines \
+  --output results/local/audit
+python code/baselines.py \
+  --manifest results/local/audit/manifest.json \
+  --output results/week3_baselines \
+  --cache results/local/week3_features.npz
+```
+
+The script creates one fixed 80/20 development split stratified by breed and
+the joint arousal/valence label. Because public dog and source IDs are absent,
+this validation set is explicitly called clip-level rather than dog-disjoint.
+It tunes classical-model regularization and CNN early stopping only on this
+validation set. Classical models are then refit on all 1,195 eligible training
+clips; each of three CNN seeds is retrained on all eligible clips for its
+validation-selected epoch count. The untouched 200-clip official test remains
+the only verified unseen-dog evaluation.
+
+Implemented Week 3 models are majority, stratified random, MFCC-summary
+logistic regression, MFCC-summary linear SVM, and a small multi-task Log-Mel
+CNN. Results include macro F1, balanced accuracy, ordinal MAE, quadratic
+weighted kappa, severe-error rate, per-breed breakdowns, and confusion
+matrices. The feature cache stays under ignored `results/local/`; small result
+tables, protocol metadata, the exact split, and the presentation figure are
+written to `results/week3_baselines/`.
