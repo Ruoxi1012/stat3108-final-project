@@ -67,7 +67,7 @@ We will report Husky and Shiba results separately as well as pooled results. Acc
 - [x] Primary dataset and license verified.
 - [x] Leakage-safe evaluation protocol specified.
 - [x] Reproducible environment and data audit (2026-10-18; issues documented below).
-- [ ] Baselines.
+- [x] Honest majority, random, MFCC-linear, and small Log-Mel CNN baselines (2026-10-27).
 - [ ] Pretrained representation comparison.
 - [ ] Full paired original/noisy/enhanced classification experiment (the generation smoke example is complete).
 - [ ] Calibrated confidence and uncertain-output rule.
@@ -119,3 +119,15 @@ The predeclared resolution removes train-side leakage before fitting and retains
 the official test set for the primary score with a duplicate-sensitivity analysis.
 See [the Week 2 audit record](results/week2_data_audit.md) for exact IDs, hashes,
 class counts, audio QA, and the paired 10 dB / 0 dB smoke example.
+
+## Week 3 baseline checkpoint
+
+The fixed clip-level validation split contains 956 fit and 239 validation clips;
+the 200 official test clips remain untouched during selection. On the official
+unseen-dog test, the MFCC linear SVM is the strongest current baseline, with
+pooled macro F1 of **0.490 for arousal** and **0.419 for valence**. The three-seed
+small Log-Mel CNN reaches 0.424 ± 0.064 and 0.354 ± 0.026, so the initial deep
+baseline does not beat the simpler model. This negative result is retained rather
+than hidden. See the [generated Week 3 record](results/week3_baselines/README.md)
+for the exact split, selection trace, per-breed metrics, confusion matrices, and
+reproduction command.

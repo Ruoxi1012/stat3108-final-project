@@ -1,13 +1,13 @@
 # STAT UN3108 Final Project - Durable Project Memory
 
-Last updated: 2026-10-18
+Last updated: 2026-10-27
 
 ## Active team and repository
 
 - Public GitHub repository: `https://github.com/Ruoxi1012/stat3108-final-project`
 - Default branch: `main`
 - Team members: Ruoxi Zhao and Cici Zeng
-- Current repository state as of 2026-09-18: initial course-required directory scaffold exists; README project title, overview, and goal/question are not yet filled in.
+- Current repository state as of 2026-10-27: Week 2 data/audit work is merged; the Week 3 baseline implementation and real experiment are on `ruoxi/honest-baselines` for review.
 - Preserve visible, meaningful contributions from both members through feature branches, pull requests, and commits over time.
 
 ## Selected project direction (recorded 2026-10-11)
@@ -17,7 +17,7 @@ Last updated: 2026-10-18
 - Primary benchmark: EmotionalCanines (ACM MM 2025), which provides 1,400 vocalization sequences from 199 Huskies and Shiba Inus and official tests containing dogs not present in training.
 - Central research gap: high results from clip-level or augmentation-heavy splits may reflect dog, breed, source, or duplicated-audio cues rather than affect; generalization to unseen dogs and breeds is still weak.
 - Confirmed innovation plan: (1) paired original/noisy/enhanced audio experiments, (2) evaluation on unseen dogs and cross-breed transfer without claiming coverage of every breed, and (3) confidence-aware output containing the predicted state, class probabilities, and a validation-calibrated reliable/uncertain decision.
-- Current phase: data pipeline and audit complete; baseline modeling is next. No model results have been produced yet.
+- Current phase: data pipeline, audit, and honest Week 3 baselines are complete. Week 4 unseen-dog uncertainty and cross-breed evaluation are next.
 
 ## Week 2 checkpoint (2026-10-18)
 
@@ -36,6 +36,29 @@ Last updated: 2026-10-18
 - The clean Python environment and four audio-pipeline tests pass. A three-slide
   presentation checkpoint covers motivation, the official split and audit, and
   the paired-noise design.
+
+## Week 3 checkpoint (2026-10-27)
+
+- The fixed clip-level development split uses seed 3108 and stratifies by breed
+  plus the joint arousal/valence label: 956 fit, 239 validation, and 200 untouched
+  official-test clips. It is not described as dog-disjoint because public dog and
+  source IDs are unavailable.
+- Implemented baselines: majority, 20-seed stratified random, MFCC summary with
+  logistic regression, MFCC summary with linear SVM, and a small multi-task
+  Log-Mel CNN with three training seeds.
+- On the official unseen-dog test, MFCC linear SVM is the strongest Week 3 model:
+  pooled macro F1 is 0.490 for arousal and 0.419 for valence. The CNN reaches
+  0.424 ± 0.064 and 0.354 ± 0.026, respectively, and therefore does not beat the
+  simpler baseline.
+- Classical regularization and CNN epoch counts are selected on validation only.
+  Classical models are refit on all 1,195 eligible training clips; CNNs are
+  retrained for validation-selected epoch counts. Official-test labels are not
+  used for tuning.
+- Checked-in results contain the exact split, raw metrics, per-breed summaries,
+  confusion matrices, protocol/package metadata, and a presentation-ready plot.
+  The local 32 MB feature cache and all audio remain ignored.
+- All eight tests pass. Remaining work includes bootstrap intervals, official
+  duplicate-sensitivity analysis, and the Week 4 cross-breed matrix.
 
 ## Purpose and source of truth
 
