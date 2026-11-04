@@ -72,3 +72,51 @@ def reliability_metrics(scores, labels, temperature=1.0, bins=10):
             'brier': float(np.mean(np.sum((probs - np.eye(3)[labels])**2, axis=1))),
             'ece': float(ece), 'ece_bins': bins,
             'accuracy': float(correct.mean())}
+
+
+def risk_coverage(scores, labels, temperature=1.0):
+    """Threshold curve with tied confidences retained or rejected together."""
+    probs = probabilities(scores, temperature)
+    labels = checked_labels(labels, len(probs))
+    confidence = probs.max(axis=1)
+    errors = probs.argmax(axis=1) != labels
+    curve = []
+    for threshold in sorted(set(confidence.tolist()), reverse=True):
+        keep = confidence >= threshold
+        curve.append({'threshold': threshold, 'retained': int(keep.sum()),
+                      'coverage': float(keep.mean()), 'error_rate': float(errors[keep].mean())})
+    return curve
+
+
+def select_threshold(scores, labels, temperature=1.0, *, split, max_error=0.2, min_retained=20):
+    if split != 'validation':
+        raise ValueError('threshold selection requires held-out validation data')
+    if not np.isfinite(max_error) or not 0 <= max_error <= 1:
+        raise ValueError('max_error must be between zero and one')
+    if not isinstance(min_retained, int) or min_retained < 1:
+        raise ValueError('min_retained must be a positive integer')
+    candidates = [row for row in risk_coverage(scores, labels, temperature)
+                  if row['retained'] >= min_retained and row['error_rate'] <= max_error]
+    if not candidates:
+        return {'threshold': None, 'retained': 0, 'coverage': 0.0, 'error_rate': None,
+                'reason': 'No validation threshold met the empirical error and sample-count criteria.'}
+    return dict(max(candidates, key=lambda row: row['coverage']),
+                reason='Maximum validation coverage meeting the empirical criteria; no test-risk guarantee.')
+
+
+def predict(scores, target, temperature, threshold):
+    if target not in LABELS:
+        raise ValueError('target must be arousal or valence')
+    if threshold is not None and (not np.isfinite(threshold) or not 0 <= threshold <= 1):
+        raise ValueError('threshold must be null (abstain all) or a probability')
+    probs = probabilities(scores, temperature)
+    results = []
+    for row in probs:
+        index = int(row.argmax())
+        confidence = float(row[index])
+        reliable = threshold is not None and confidence >= threshold
+        results.append({'prediction': LABELS[target][index] if reliable else None,
+                        'top_class': LABELS[target][index],
+                        'probabilities': dict(zip(LABELS[target], row.tolist())),
+                        'confidence': confidence, 'status': 'reliable' if reliable else 'uncertain'})
+    return results

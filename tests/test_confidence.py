@@ -43,5 +43,35 @@ class CalibrationTests(unittest.TestCase):
                                    c.probabilities([[1, 2, 3]]))
 
 
+class SelectivePredictionTests(unittest.TestCase):
+    def test_threshold_maximizes_coverage_and_keeps_ties(self):
+        scores = [[8, 0, 0], [4, 0, 0], [1, 0, 0], [1, 0, 0]]
+        labels = [0, 0, 1, 0]
+        policy = c.select_threshold(scores, labels, split='validation', max_error=0, min_retained=2)
+        self.assertEqual(policy['retained'], 2)
+        self.assertEqual(policy['coverage'], .5)
+        output = c.predict(scores, 'arousal', 1, policy['threshold'])
+        self.assertEqual([r['status'] for r in output], ['reliable', 'reliable', 'uncertain', 'uncertain'])
+        self.assertIsNone(output[-1]['prediction'])
+        self.assertEqual(output[-1]['top_class'], 'Low')
+
+    def test_no_threshold_abstains_all_without_nan(self):
+        policy = c.select_threshold([[1, 0, 0]], [1], split='validation', min_retained=1, max_error=0)
+        self.assertIsNone(policy['threshold'])
+        self.assertIsNone(policy['error_rate'])
+        self.assertEqual(c.predict([[1, 0, 0]], 'valence', 1, policy['threshold'])[0]['status'], 'uncertain')
+
+    def test_uniform_ties_cannot_be_selectively_split(self):
+        curve = c.risk_coverage(np.zeros((3, 3)), [0, 1, 2])
+        self.assertEqual(len(curve), 1)
+        self.assertEqual(curve[0]['coverage'], 1)
+        with self.assertRaises(ValueError):
+            c.select_threshold([[1, 0, 0]], [0], split='official_test')
+        with self.assertRaises(ValueError):
+            c.predict([[1, 0, 0]], 'happy', 1, .5)
+        with self.assertRaises(ValueError):
+            c.select_threshold([[1, 0, 0]], [0], split='validation', min_retained=0)
+
+
 if __name__ == '__main__':
     unittest.main()
