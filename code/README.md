@@ -85,3 +85,9 @@ conditions. No classification improvement or real-dataset result is claimed.
 The synthetic tests verify achieved SNR, determinism, output duration, split
 provenance, source hash enforcement, duplicate leakage detection, silent-input
 rejection, and Git LFS pointer detection. They do not measure model accuracy.
+
+## Confidence-aware output
+
+See [CONFIDENCE.md](CONFIDENCE.md) for validation-only calibration, empirical
+abstention thresholds, the model score export contract, and CLI commands. These
+tools prepare the reliable/uncertain output; real model integration is pending.
