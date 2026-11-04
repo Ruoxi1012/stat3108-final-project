@@ -79,3 +79,14 @@ review the duplicate-resolution policy before approval.
 ## Contribution rule
 
 A branch name alone is not evidence of contribution. Each contribution must end in a small, explainable commit and a pull request that identifies the question answered, files changed, verification command, result, and remaining limitation.
+
+## Cici checkpoint — 2026-11-03
+
+Implemented temperature calibration and reliability metrics, tie-aware
+validation-selected abstention, and a CLI for fitting policies and producing
+class probabilities plus reliable/uncertain output. Tests exercise disjoint
+calibration/selection IDs, training overlap, model mismatch, absent qualifying
+thresholds, and label-free inference. See `code/CONFIDENCE.md` for reproduction.
+This is executable infrastructure tested on synthetic scores, not a new real-data
+result. Ruoxi's baseline branch is preserved; exporting held-out scores from the
+same frozen classifier is the next integration dependency. AI assistance: Codex.
