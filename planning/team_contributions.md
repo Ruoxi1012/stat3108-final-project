@@ -29,6 +29,7 @@ Git evidence:
 - `b68e590` — `fix: average stochastic baseline across seeds`
 - `2108cfc` — `exp: record honest Week 3 baseline results`
 - Pull request: [#2](https://github.com/Ruoxi1012/stat3108-final-project/pull/2)
+- Pull request: [#5](https://github.com/Ruoxi1012/stat3108-final-project/pull/5)
 
 ### Primary next responsibilities
 
@@ -57,12 +58,13 @@ Git evidence:
 - `26ed191` — `chore: exclude generated audio, audits, and Python caches`
 - `60132f9` — `docs: record Cici's first executable contribution`
 - Pull request: [#3](https://github.com/Ruoxi1012/stat3108-final-project/pull/3)
+- Pull request: [#6](https://github.com/Ruoxi1012/stat3108-final-project/pull/6)
 
 ### Primary next responsibilities
 
 - Extend the paired pipeline with a reproducible audio-enhancement method and safety checks on original recordings.
-- Implement calibrated class probabilities and the reliable/uncertain output interface.
-- Add automated tests that prevent data leakage and verify confidence-threshold behavior.
+- Integrate the completed confidence interface with frozen real-model per-clip scores.
+- Evaluate calibration and abstention on the official test without fitting on calibration clips.
 - Prepare demo examples covering reliable, incorrect, and uncertain predictions.
 
 Working branch: create a task-specific `cici/...` branch for each new unit of work.
@@ -95,3 +97,14 @@ can explain the negative CNN result before merge.
 ## Contribution rule
 
 A branch name alone is not evidence of contribution. Each contribution must end in a small, explainable commit and a pull request that identifies the question answered, files changed, verification command, result, and remaining limitation.
+
+## Cici checkpoint — 2026-11-03
+
+Implemented temperature calibration and reliability metrics, tie-aware
+validation-selected abstention, and a CLI for fitting policies and producing
+class probabilities plus reliable/uncertain output. Tests exercise disjoint
+calibration/selection IDs, training overlap, model mismatch, absent qualifying
+thresholds, and label-free inference. See `code/CONFIDENCE.md` for reproduction.
+This is executable infrastructure tested on synthetic scores, not a new real-data
+result. Ruoxi's baseline branch is preserved; exporting held-out scores from the
+same frozen classifier is the next integration dependency. AI assistance: Codex.

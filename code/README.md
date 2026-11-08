@@ -118,3 +118,9 @@ weighted kappa, severe-error rate, per-breed breakdowns, and confusion
 matrices. The feature cache stays under ignored `results/local/`; small result
 tables, protocol metadata, the exact split, and the presentation figure are
 written to `results/week3_baselines/`.
+
+## Confidence-aware output
+
+See [CONFIDENCE.md](CONFIDENCE.md) for validation-only calibration, empirical
+abstention thresholds, the model score export contract, and CLI commands. These
+tools prepare the reliable/uncertain output; real model integration is pending.

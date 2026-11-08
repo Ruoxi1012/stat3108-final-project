@@ -1,13 +1,13 @@
 # STAT UN3108 Final Project - Durable Project Memory
 
-Last updated: 2026-10-27
+Last updated: 2026-11-08
 
 ## Active team and repository
 
 - Public GitHub repository: `https://github.com/Ruoxi1012/stat3108-final-project`
 - Default branch: `main`
 - Team members: Ruoxi Zhao and Cici Zeng
-- Current repository state as of 2026-10-27: Week 2 data/audit work is merged; the Week 3 baseline implementation and real experiment are on `ruoxi/honest-baselines` for review.
+- Current repository state as of 2026-11-08: Week 2 data/audit work and Cici's confidence-output infrastructure are merged to `main`; Ruoxi's Week 3 baseline implementation and real experiment are on `ruoxi/honest-baselines` in pull request #5 for review.
 - Preserve visible, meaningful contributions from both members through feature branches, pull requests, and commits over time.
 
 ## Selected project direction (recorded 2026-10-11)
@@ -17,7 +17,7 @@ Last updated: 2026-10-27
 - Primary benchmark: EmotionalCanines (ACM MM 2025), which provides 1,400 vocalization sequences from 199 Huskies and Shiba Inus and official tests containing dogs not present in training.
 - Central research gap: high results from clip-level or augmentation-heavy splits may reflect dog, breed, source, or duplicated-audio cues rather than affect; generalization to unseen dogs and breeds is still weak.
 - Confirmed innovation plan: (1) paired original/noisy/enhanced audio experiments, (2) evaluation on unseen dogs and cross-breed transfer without claiming coverage of every breed, and (3) confidence-aware output containing the predicted state, class probabilities, and a validation-calibrated reliable/uncertain decision.
-- Current phase: data pipeline, audit, and honest Week 3 baselines are complete. Week 4 unseen-dog uncertainty and cross-breed evaluation are next.
+- Current phase: data pipeline, audit, honest Week 3 baselines, and synthetic-tested confidence infrastructure are complete. Real-model confidence integration, cross-breed evaluation, paired robustness classification, and presentation work are next.
 
 ## Week 2 checkpoint (2026-10-18)
 
@@ -59,6 +59,21 @@ Last updated: 2026-10-27
   The local 32 MB feature cache and all audio remain ignored.
 - All eight tests pass. Remaining work includes bootstrap intervals, official
   duplicate-sensitivity analysis, and the Week 4 cross-breed matrix.
+
+## Confidence checkpoint (2026-11-03; integrated 2026-11-08)
+
+- Cici's pull request #6 added validation-only temperature scaling, NLL/Brier/ECE
+  metrics, tie-aware abstention threshold selection, risk/coverage output, and a
+  CLI that returns class probabilities plus reliable/uncertain decisions.
+- Leakage and model-identity checks require disjoint fitting, calibration, and
+  threshold-selection source IDs. The implementation and CLI have synthetic
+  tests, but no real EmotionalCanines calibration result is claimed yet.
+- The next dependency is per-clip score export from one frozen classifier. A
+  classifier refit on calibration clips cannot use a policy learned from those
+  same clips, so the Week 3 refit protocol needs a separate integration path.
+- Pull request #5 was synchronized with the newer `main` on 2026-11-08 so the
+  baseline and confidence components can be reviewed together without dropping
+  either team member's work.
 
 ## Purpose and source of truth
 

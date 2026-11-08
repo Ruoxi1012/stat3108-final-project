@@ -62,15 +62,22 @@ We will report Husky and Shiba results separately as well as pooled results. Acc
 
 ## Current status
 
+- **Progress snapshot (2026-11-08):** the data audit, honest Week 3 baselines,
+  and confidence/abstention infrastructure are implemented. The strongest real
+  official-test baseline is still the MFCC linear SVM. Confidence tooling is
+  tested on synthetic scores but has not yet produced a calibrated real-data
+  result. The next integration step is to export per-clip scores from one frozen
+  classifier without reusing its calibration clips for fitting.
 - [x] Project scope and scientific claim refined.
 - [x] Initial field review and evidence matrix completed.
 - [x] Primary dataset and license verified.
 - [x] Leakage-safe evaluation protocol specified.
 - [x] Reproducible environment and data audit (2026-10-18; issues documented below).
 - [x] Honest majority, random, MFCC-linear, and small Log-Mel CNN baselines (2026-10-27).
+- [x] Validation-only calibration, reliability metrics, and reliable/uncertain output tooling (synthetic-score verification, 2026-11-03).
 - [ ] Pretrained representation comparison.
 - [ ] Full paired original/noisy/enhanced classification experiment (the generation smoke example is complete).
-- [ ] Calibrated confidence and uncertain-output rule.
+- [ ] Real-model score export, calibrated confidence evaluation, and uncertain-output results.
 - [ ] Robustness, ablations, and error analysis.
 - [ ] Demo, presentation, and two-page report.
 
