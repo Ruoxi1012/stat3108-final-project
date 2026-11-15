@@ -106,3 +106,5 @@ Because presentation is 60% of the course grade, update the story continuously:
 - [x] Preserve the strict-policy negative result: no threshold meets 20% validation error with 20 retained clips, so all official predictions are uncertain.
 - [ ] Team review, member-owned commit, and pull request; do not credit the AI-assisted working-tree changes to a teammate who has not reviewed them.
 - [ ] Add per-breed reliability and confidence intervals during Week 7 interpretation work.
+- [x] Test one richer validation-selected acoustic model iteration: arousal did not improve; valence reached 0.472 macro F1 but the paired improvement interval includes zero.
+- [ ] Freeze further official-test model iteration; use nested development validation for pretrained representations and treat any later official evaluation as confirmatory, not a tuning loop.

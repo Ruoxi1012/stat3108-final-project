@@ -94,6 +94,24 @@ Last updated: 2026-11-15
 - Do not loosen the risk rule using official labels. Any alternative policy must
   be declared from validation evidence and presented as a separate iteration.
 
+## Week 6 richer-model iteration (2026-11-15)
+
+- A validation-only candidate search added multi-scale Log-Mel distribution
+  statistics, temporal deltas, four-region pooling, and the known Husky/Shiba
+  indicator. It selected a strongly regularized linear SVM for arousal and an
+  ExtraTrees classifier for valence before the official evaluation.
+- Official unseen-dog arousal macro F1 was 0.485 (95% bootstrap interval
+  0.414–0.553), effectively unchanged from the Week 3 MFCC SVM's 0.490.
+- Official unseen-dog valence macro F1 was 0.472 (0.402–0.541), a +0.053 point
+  estimate over 0.419. The paired difference interval was -0.033 to +0.137 and
+  includes zero, so the improvement is not statistically clear on these clips.
+- The result reinforces the core finding: validation improvements do not
+  reliably transfer to unseen dogs. Do not claim precise emotion prediction.
+- Because the official result has now been inspected for this iteration, do not
+  repeatedly select new feature/model variants against it. Future representation
+  work should use nested development evaluation and reserve new external or
+  instructor-approved evidence for final confirmation.
+
 ## Purpose and source of truth
 
 This file is the persistent, searchable memory for the STAT UN3108 (Applied Deep Learning and AI, Fall 2026, Section 001) final project. It summarizes two archived course documents:

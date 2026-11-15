@@ -80,6 +80,7 @@ We will report Husky and Shiba results separately as well as pooled results. Acc
 - [ ] Pretrained representation comparison.
 - [ ] Full paired original/noisy/enhanced classification experiment (the generation smoke example is complete).
 - [x] Real-model score export, calibrated confidence evaluation, and uncertain-output results (2026-11-15; strict policy abstains on all official clips).
+- [x] Richer acoustic feature/model iteration (2026-11-15; valence point estimate improved to 0.472, but its paired improvement interval includes zero; arousal did not improve).
 - [ ] Robustness, ablations, and error analysis.
 - [ ] Demo, presentation, and two-page report.
 
@@ -152,3 +153,15 @@ minimum 20 clips for either target, so the honest confidence-aware output is
 [Week 6 result](results/week6_confidence/README.md), policies, prediction examples,
 and risk-coverage figure. A looser policy must be specified from validation
 evidence rather than chosen to improve the already-viewed official result.
+
+## Richer acoustic model iteration
+
+A validation-only search combined MFCCs with multi-scale Log-Mel statistics,
+temporal dynamics, temporal pooling, and the known breed indicator. It selected
+a strongly regularized linear SVM for arousal and ExtraTrees for valence. On the
+official unseen-dog test, arousal remained effectively unchanged at **0.485**
+macro F1 versus 0.490, while valence rose from 0.419 to **0.472**. The paired
+95% bootstrap interval for the valence difference is -0.033 to +0.137, so this
+is promising but not yet clear evidence of a stable improvement. See the
+[richer-model experiment](results/week6_improved_models/README.md). Further
+model iterations must not repeatedly use the official labels for selection.

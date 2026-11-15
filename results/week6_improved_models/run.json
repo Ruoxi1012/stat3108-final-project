@@ -1,0 +1,249 @@
+{
+  "manifest_sha256": "df817b4747aa6e82ab668491e5927a8b9647f96c52da9a48298f66873a64f61d",
+  "fit_count": 956,
+  "validation_count": 239,
+  "eligible_refit_count": 1195,
+  "official_test_count": 200,
+  "feature_dimension": 804,
+  "selection": {
+    "arousal": {
+      "selected": {
+        "family": "linear_svm",
+        "C": 0.0001
+      },
+      "validation_macro_f1": 0.5495266116234839,
+      "trials": [
+        {
+          "family": "linear_svm",
+          "C": 0.0001,
+          "validation_macro_f1": 0.5495266116234839
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.0003,
+          "validation_macro_f1": 0.5381023755726405
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.001,
+          "validation_macro_f1": 0.4999868520478308
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.003,
+          "validation_macro_f1": 0.45687133198066593
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.01,
+          "validation_macro_f1": 0.4451816863168074
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.03,
+          "validation_macro_f1": 0.4000981018452923
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.1,
+          "validation_macro_f1": 0.3723015873015873
+        },
+        {
+          "family": "extra_trees",
+          "min_samples_leaf": 1,
+          "validation_macro_f1": 0.5022793872793873
+        },
+        {
+          "family": "extra_trees",
+          "min_samples_leaf": 3,
+          "validation_macro_f1": 0.5177455855166698
+        },
+        {
+          "family": "extra_trees",
+          "min_samples_leaf": 5,
+          "validation_macro_f1": 0.5165171111868494
+        },
+        {
+          "family": "extra_trees",
+          "min_samples_leaf": 10,
+          "validation_macro_f1": 0.5360477535660454
+        }
+      ]
+    },
+    "valence": {
+      "selected": {
+        "family": "extra_trees",
+        "min_samples_leaf": 3
+      },
+      "validation_macro_f1": 0.4586832544149617,
+      "trials": [
+        {
+          "family": "linear_svm",
+          "C": 0.0001,
+          "validation_macro_f1": 0.3909307028512326
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.0003,
+          "validation_macro_f1": 0.41370389392988266
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.001,
+          "validation_macro_f1": 0.41619919476781253
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.003,
+          "validation_macro_f1": 0.38574559726788493
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.01,
+          "validation_macro_f1": 0.38769913288969554
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.03,
+          "validation_macro_f1": 0.3662672209994294
+        },
+        {
+          "family": "linear_svm",
+          "C": 0.1,
+          "validation_macro_f1": 0.373400095509629
+        },
+        {
+          "family": "extra_trees",
+          "min_samples_leaf": 1,
+          "validation_macro_f1": 0.4381963787596514
+        },
+        {
+          "family": "extra_trees",
+          "min_samples_leaf": 3,
+          "validation_macro_f1": 0.4586832544149617
+        },
+        {
+          "family": "extra_trees",
+          "min_samples_leaf": 5,
+          "validation_macro_f1": 0.4224846504258269
+        },
+        {
+          "family": "extra_trees",
+          "min_samples_leaf": 10,
+          "validation_macro_f1": 0.4341179351239713
+        }
+      ]
+    }
+  },
+  "bootstrap_samples": 5000,
+  "results": [
+    {
+      "target": "arousal",
+      "n": 200,
+      "macro_f1": 0.48539961681448496,
+      "balanced_accuracy": 0.48515000753806725,
+      "mae": 0.655,
+      "quadratic_weighted_kappa": 0.283799310608962,
+      "severe_error_rate": 0.14,
+      "macro_f1_95_ci": [
+        0.4144445196243573,
+        0.5531850731413792
+      ],
+      "week3_macro_f1": 0.48965595807701073,
+      "macro_f1_difference": -0.004256341262525776,
+      "difference_95_ci": [
+        -0.07238363845123284,
+        0.06599225707077173
+      ],
+      "confusion_matrix": [
+        [
+          31,
+          21,
+          15
+        ],
+        [
+          15,
+          32,
+          20
+        ],
+        [
+          13,
+          19,
+          34
+        ]
+      ],
+      "per_breed": {
+        "husky": {
+          "n": 100,
+          "macro_f1": 0.44519626978963345,
+          "balanced_accuracy": 0.4483065953654189,
+          "mae": 0.65,
+          "quadratic_weighted_kappa": 0.24778761061946908,
+          "severe_error_rate": 0.1
+        },
+        "shiba": {
+          "n": 100,
+          "macro_f1": 0.5100971783163564,
+          "balanced_accuracy": 0.5196078431372548,
+          "mae": 0.66,
+          "quadratic_weighted_kappa": 0.3110900986086722,
+          "severe_error_rate": 0.18
+        }
+      }
+    },
+    {
+      "target": "valence",
+      "n": 200,
+      "macro_f1": 0.47202380952380957,
+      "balanced_accuracy": 0.47942107643600185,
+      "mae": 0.68,
+      "quadratic_weighted_kappa": 0.263433138143115,
+      "severe_error_rate": 0.16,
+      "macro_f1_95_ci": [
+        0.40160143854940566,
+        0.5406386372999418
+      ],
+      "week3_macro_f1": 0.41904460319873,
+      "macro_f1_difference": 0.052979206325079575,
+      "difference_95_ci": [
+        -0.03309379996819767,
+        0.13732801552671067
+      ],
+      "confusion_matrix": [
+        [
+          24,
+          20,
+          22
+        ],
+        [
+          12,
+          28,
+          27
+        ],
+        [
+          10,
+          13,
+          44
+        ]
+      ],
+      "per_breed": {
+        "husky": {
+          "n": 100,
+          "macro_f1": 0.4772242734346988,
+          "balanced_accuracy": 0.49702911467617356,
+          "mae": 0.67,
+          "quadratic_weighted_kappa": 0.28021664766248566,
+          "severe_error_rate": 0.17
+        },
+        "shiba": {
+          "n": 100,
+          "macro_f1": 0.46052703403477163,
+          "balanced_accuracy": 0.4601901366607249,
+          "mae": 0.69,
+          "quadratic_weighted_kappa": 0.2442748091603053,
+          "severe_error_rate": 0.15
+        }
+      }
+    }
+  ]
+}
