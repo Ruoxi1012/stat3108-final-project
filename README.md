@@ -62,12 +62,14 @@ We will report Husky and Shiba results separately as well as pooled results. Acc
 
 ## Current status
 
-- **Progress snapshot (2026-11-08):** the data audit, honest Week 3 baselines,
-  and confidence/abstention infrastructure are implemented. The strongest real
-  official-test baseline is still the MFCC linear SVM. Confidence tooling is
-  tested on synthetic scores but has not yet produced a calibrated real-data
-  result. The next integration step is to export per-clip scores from one frozen
-  classifier without reusing its calibration clips for fitting.
+- **Progress snapshot (2026-11-15):** the data audit, honest Week 3 baselines,
+  and real-model confidence integration are implemented. The strongest real
+  official-test baseline is still the MFCC linear SVM. With the predeclared 20%
+  maximum validation error and at least 20 retained clips, neither arousal nor
+  valence has a qualifying confidence threshold; all 200 official predictions
+  are therefore returned as uncertain. Temperature scaling did not improve
+  official-test NLL. This negative result is retained rather than weakened after
+  looking at test labels.
 - [x] Project scope and scientific claim refined.
 - [x] Initial field review and evidence matrix completed.
 - [x] Primary dataset and license verified.
@@ -77,7 +79,7 @@ We will report Husky and Shiba results separately as well as pooled results. Acc
 - [x] Validation-only calibration, reliability metrics, and reliable/uncertain output tooling (synthetic-score verification, 2026-11-03).
 - [ ] Pretrained representation comparison.
 - [ ] Full paired original/noisy/enhanced classification experiment (the generation smoke example is complete).
-- [ ] Real-model score export, calibrated confidence evaluation, and uncertain-output results.
+- [x] Real-model score export, calibrated confidence evaluation, and uncertain-output results (2026-11-15; strict policy abstains on all official clips).
 - [ ] Robustness, ablations, and error analysis.
 - [ ] Demo, presentation, and two-page report.
 
@@ -138,3 +140,15 @@ baseline does not beat the simpler model. This negative result is retained rathe
 than hidden. See the [generated Week 3 record](results/week3_baselines/README.md)
 for the exact split, selection trace, per-breed metrics, confusion matrices, and
 reproduction command.
+
+## Week 6 confidence checkpoint
+
+The same frozen MFCC SVM is used for class-score export, temperature calibration,
+threshold selection, and official-test inference. Its 956 training IDs, 119
+calibration IDs, 120 threshold-selection IDs, and 200 official test IDs are
+disjoint. At the predeclared 20% validation-error limit, no threshold retains the
+minimum 20 clips for either target, so the honest confidence-aware output is
+`uncertain` for all official examples. See the
+[Week 6 result](results/week6_confidence/README.md), policies, prediction examples,
+and risk-coverage figure. A looser policy must be specified from validation
+evidence rather than chosen to improve the already-viewed official result.

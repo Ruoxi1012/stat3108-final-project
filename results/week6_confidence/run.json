@@ -1,0 +1,13 @@
+{
+  "manifest_sha256": "df817b4747aa6e82ab668491e5927a8b9647f96c52da9a48298f66873a64f61d",
+  "model": "MFCC linear SVM",
+  "C": 0.01,
+  "fit_count": 956,
+  "calibration_count": 119,
+  "selection_count": 120,
+  "official_test_count": 200,
+  "split_seed": 3108,
+  "max_error": 0.2,
+  "min_retained": 20,
+  "local_score_exports": "results/local/week6_confidence"
+}

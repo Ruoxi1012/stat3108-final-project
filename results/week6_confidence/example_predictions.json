@@ -1,0 +1,54 @@
+{
+  "arousal": [
+    {
+      "prediction": null,
+      "top_class": "Medium",
+      "probabilities": {
+        "Low": 0.37374016946135447,
+        "Medium": 0.427243539849187,
+        "High": 0.19901629068945856
+      },
+      "confidence": 0.427243539849187,
+      "status": "uncertain",
+      "source_id": "husky_test_00000"
+    },
+    {
+      "prediction": null,
+      "top_class": "Medium",
+      "probabilities": {
+        "Low": 0.3683326928288625,
+        "Medium": 0.3716936248756069,
+        "High": 0.25997368229553064
+      },
+      "confidence": 0.3716936248756069,
+      "status": "uncertain",
+      "source_id": "husky_test_00001"
+    }
+  ],
+  "valence": [
+    {
+      "prediction": null,
+      "top_class": "Neutral",
+      "probabilities": {
+        "Negative": 0.35104077372425607,
+        "Neutral": 0.37720677019842536,
+        "Positive": 0.2717524560773185
+      },
+      "confidence": 0.37720677019842536,
+      "status": "uncertain",
+      "source_id": "husky_test_00000"
+    },
+    {
+      "prediction": null,
+      "top_class": "Positive",
+      "probabilities": {
+        "Negative": 0.30801378667664125,
+        "Neutral": 0.3033571642696802,
+        "Positive": 0.3886290490536786
+      },
+      "confidence": 0.3886290490536786,
+      "status": "uncertain",
+      "source_id": "husky_test_00001"
+    }
+  ]
+}

@@ -97,3 +97,12 @@ Because presentation is 60% of the course grade, update the story continuously:
 - End of Week 6: freeze the main result and claim.
 - End of Week 7: freeze error cases, limitation slide, and demo behavior.
 - Week 8 onward: rehearse for clarity and timing rather than adding uncontrolled models.
+
+## Week 6 checkpoint — 2026-11-15
+
+- [x] Export real per-clip scores from the same frozen MFCC SVM used for inference.
+- [x] Keep model fitting, temperature calibration, threshold selection, and official testing source-disjoint.
+- [x] Generate probabilities, reliable/uncertain states, reliability metrics, and risk-coverage curves.
+- [x] Preserve the strict-policy negative result: no threshold meets 20% validation error with 20 retained clips, so all official predictions are uncertain.
+- [ ] Team review, member-owned commit, and pull request; do not credit the AI-assisted working-tree changes to a teammate who has not reviewed them.
+- [ ] Add per-breed reliability and confidence intervals during Week 7 interpretation work.

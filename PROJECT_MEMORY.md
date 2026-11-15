@@ -1,13 +1,13 @@
 # STAT UN3108 Final Project - Durable Project Memory
 
-Last updated: 2026-11-08
+Last updated: 2026-11-15
 
 ## Active team and repository
 
 - Public GitHub repository: `https://github.com/Ruoxi1012/stat3108-final-project`
 - Default branch: `main`
 - Team members: Ruoxi Zhao and Cici Zeng
-- Current repository state as of 2026-11-08: Week 2 data/audit work and Cici's confidence-output infrastructure are merged to `main`; Ruoxi's Week 3 baseline implementation and real experiment are on `ruoxi/honest-baselines` in pull request #5 for review.
+- Current repository state as of 2026-11-15: Week 2 data/audit work, Cici's confidence-output infrastructure, and Ruoxi's Week 3 baseline experiment are integrated on the current branch. The Week 6 real-model confidence experiment is implemented locally and awaits team review/commit ownership.
 - Preserve visible, meaningful contributions from both members through feature branches, pull requests, and commits over time.
 
 ## Selected project direction (recorded 2026-10-11)
@@ -17,7 +17,7 @@ Last updated: 2026-11-08
 - Primary benchmark: EmotionalCanines (ACM MM 2025), which provides 1,400 vocalization sequences from 199 Huskies and Shiba Inus and official tests containing dogs not present in training.
 - Central research gap: high results from clip-level or augmentation-heavy splits may reflect dog, breed, source, or duplicated-audio cues rather than affect; generalization to unseen dogs and breeds is still weak.
 - Confirmed innovation plan: (1) paired original/noisy/enhanced audio experiments, (2) evaluation on unseen dogs and cross-breed transfer without claiming coverage of every breed, and (3) confidence-aware output containing the predicted state, class probabilities, and a validation-calibrated reliable/uncertain decision.
-- Current phase: data pipeline, audit, honest Week 3 baselines, and synthetic-tested confidence infrastructure are complete. Real-model confidence integration, cross-breed evaluation, paired robustness classification, and presentation work are next.
+- Current phase: data pipeline, audit, honest Week 3 baselines, and real-model confidence integration are complete. Cross-breed evaluation, paired robustness classification, interpretation, and presentation work are next.
 
 ## Week 2 checkpoint (2026-10-18)
 
@@ -74,6 +74,25 @@ Last updated: 2026-11-08
 - Pull request #5 was synchronized with the newer `main` on 2026-11-08 so the
   baseline and confidence components can be reviewed together without dropping
   either team member's work.
+
+## Week 6 real-model confidence checkpoint (2026-11-15)
+
+- A deterministic integration path trains the frozen Week 3 MFCC linear SVM
+  (`C=0.01`) on 956 fit clips, then divides the 239 validation clips into 119
+  temperature-calibration and 120 threshold-selection clips. All four source-ID
+  groups, including the 200 official test clips, are disjoint.
+- Under the predeclared maximum validation error of 20% and minimum retained
+  count of 20, neither arousal nor valence has a qualifying threshold. The honest
+  official output is therefore `uncertain` for every clip rather than a forced
+  reliability claim.
+- Temperature scaling did not improve official-test NLL: arousal changed from
+  1.015 to 1.016 and valence from 1.067 to 1.071. This is a negative result and
+  not evidence that calibration is generally ineffective.
+- Raw per-clip score exports remain ignored under `results/local/`; the checked-in
+  artifacts are policies, compact examples, a summary table, a risk-coverage
+  figure, and exact reproduction instructions.
+- Do not loosen the risk rule using official labels. Any alternative policy must
+  be declared from validation evidence and presented as a separate iteration.
 
 ## Purpose and source of truth
 
