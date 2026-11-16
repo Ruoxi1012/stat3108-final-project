@@ -105,14 +105,33 @@ def select_model(x_fit, y_fit, x_validation, y_validation):
     return config, trials
 
 
+def sampled_macro_f1(labels, predictions, indices):
+    sampled_labels = np.asarray(labels)[indices]
+    sampled_predictions = np.asarray(predictions)[indices]
+    class_scores = []
+    for class_index in (0, 1, 2):
+        true_positive = np.sum(
+            (sampled_labels == class_index) & (sampled_predictions == class_index), axis=1
+        )
+        false_positive = np.sum(
+            (sampled_labels != class_index) & (sampled_predictions == class_index), axis=1
+        )
+        false_negative = np.sum(
+            (sampled_labels == class_index) & (sampled_predictions != class_index), axis=1
+        )
+        denominator = 2 * true_positive + false_positive + false_negative
+        class_scores.append(np.divide(
+            2 * true_positive, denominator,
+            out=np.zeros_like(denominator, dtype=float), where=denominator != 0,
+        ))
+    return np.mean(class_scores, axis=0)
+
+
 def bootstrap_macro_f1(labels, predictions, seed=SPLIT_SEED, samples=BOOTSTRAP_SAMPLES):
     labels, predictions = np.asarray(labels), np.asarray(predictions)
     generator = np.random.default_rng(seed)
-    values = []
-    for _ in range(samples):
-        selected = generator.integers(0, len(labels), len(labels))
-        values.append(f1_score(labels[selected], predictions[selected], average="macro",
-                               labels=(0, 1, 2), zero_division=0))
+    selected = generator.integers(0, len(labels), (samples, len(labels)))
+    values = sampled_macro_f1(labels, predictions, selected)
     return [float(value) for value in np.quantile(values, (0.025, 0.975))]
 
 
@@ -120,14 +139,11 @@ def bootstrap_difference(labels, improved, baseline, seed=SPLIT_SEED,
                          samples=BOOTSTRAP_SAMPLES):
     labels, improved, baseline = map(np.asarray, (labels, improved, baseline))
     generator = np.random.default_rng(seed)
-    differences = []
-    for _ in range(samples):
-        selected = generator.integers(0, len(labels), len(labels))
-        new_score = f1_score(labels[selected], improved[selected], average="macro",
-                             labels=(0, 1, 2), zero_division=0)
-        old_score = f1_score(labels[selected], baseline[selected], average="macro",
-                             labels=(0, 1, 2), zero_division=0)
-        differences.append(new_score - old_score)
+    selected = generator.integers(0, len(labels), (samples, len(labels)))
+    differences = (
+        sampled_macro_f1(labels, improved, selected)
+        - sampled_macro_f1(labels, baseline, selected)
+    )
     return [float(value) for value in np.quantile(differences, (0.025, 0.975))]
 
 

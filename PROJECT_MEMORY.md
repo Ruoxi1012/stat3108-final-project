@@ -112,6 +112,27 @@ Last updated: 2026-11-15
   work should use nested development evaluation and reserve new external or
   instructor-approved evidence for final confirmation.
 
+## Frozen wav2vec 2.0 checkpoint (2026-11-15)
+
+- The planned human-speech representation experiment uses torchaudio's 94M-
+  parameter wav2vec 2.0 Base model, pretrained on LibriSpeech and kept frozen.
+  Twelve encoder layers are pooled to valid-frame mean/standard-deviation
+  features; layer, pooling, breed metadata, and linear-SVM regularization are
+  selected only on the fixed development validation split.
+- The selected arousal representation is layer 3 mean+standard deviation with
+  no breed feature and `C=0.0001`. Official unseen-dog macro F1 is 0.507 (95%
+  bootstrap interval 0.435–0.575), +0.017 versus the Week 3 MFCC SVM; the paired
+  difference interval -0.057 to +0.093 includes zero.
+- The selected valence representation is layer 12 mean pooling with no breed
+  feature and `C=0.01`. Official macro F1 is 0.439 (0.367–0.506), +0.020 versus
+  Week 3; the paired interval -0.066 to +0.109 includes zero. It is below the
+  richer acoustic ExtraTrees point estimate of 0.472.
+- Current strongest point estimates by target are therefore wav2vec arousal
+  0.507 and richer-acoustic valence 0.472. These are not precise emotion reading,
+  and neither improvement has a paired interval excluding zero.
+- The downloaded 360 MB model and 98 MB resumable embedding cache remain local
+  and ignored. Only code, compact results, and figures belong in Git.
+
 ## Purpose and source of truth
 
 This file is the persistent, searchable memory for the STAT UN3108 (Applied Deep Learning and AI, Fall 2026, Section 001) final project. It summarizes two archived course documents:

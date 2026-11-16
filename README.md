@@ -62,9 +62,11 @@ We will report Husky and Shiba results separately as well as pooled results. Acc
 
 ## Current status
 
-- **Progress snapshot (2026-11-15):** the data audit, honest Week 3 baselines,
-  and real-model confidence integration are implemented. The strongest real
-  official-test baseline is still the MFCC linear SVM. With the predeclared 20%
+- **Progress snapshot (2026-11-15):** the data audit, honest baselines, frozen
+  wav2vec 2.0 comparison, and real-model confidence integration are implemented.
+  The strongest official point estimates are now 0.507 macro F1 for arousal
+  (wav2vec 2.0) and 0.472 for valence (richer acoustic ExtraTrees), but neither
+  paired improvement interval excludes zero. With the predeclared 20%
   maximum validation error and at least 20 retained clips, neither arousal nor
   valence has a qualifying confidence threshold; all 200 official predictions
   are therefore returned as uncertain. Temperature scaling did not improve
@@ -77,7 +79,8 @@ We will report Husky and Shiba results separately as well as pooled results. Acc
 - [x] Reproducible environment and data audit (2026-10-18; issues documented below).
 - [x] Honest majority, random, MFCC-linear, and small Log-Mel CNN baselines (2026-10-27).
 - [x] Validation-only calibration, reliability metrics, and reliable/uncertain output tooling (synthetic-score verification, 2026-11-03).
-- [ ] Pretrained representation comparison.
+- [x] Frozen human-speech representation comparison using wav2vec 2.0 Base (2026-11-15).
+- [ ] Canine/bioacoustic pretrained comparison such as Dog2vec or AVES.
 - [ ] Full paired original/noisy/enhanced classification experiment (the generation smoke example is complete).
 - [x] Real-model score export, calibrated confidence evaluation, and uncertain-output results (2026-11-15; strict policy abstains on all official clips).
 - [x] Richer acoustic feature/model iteration (2026-11-15; valence point estimate improved to 0.472, but its paired improvement interval includes zero; arousal did not improve).
@@ -165,3 +168,15 @@ macro F1 versus 0.490, while valence rose from 0.419 to **0.472**. The paired
 is promising but not yet clear evidence of a stable improvement. See the
 [richer-model experiment](results/week6_improved_models/README.md). Further
 model iterations must not repeatedly use the official labels for selection.
+
+## Frozen wav2vec 2.0 checkpoint
+
+The planned human-speech representation comparison uses the 94M-parameter
+wav2vec 2.0 Base encoder without fine-tuning. Layer, temporal pooling, breed
+metadata, and the linear-head regularization are selected on development
+validation. Official unseen-dog macro F1 is **0.507 for arousal** and **0.439
+for valence**, versus 0.490 and 0.419 for the Week 3 MFCC SVM. Both paired
+improvement intervals include zero, and wav2vec valence remains below the richer
+acoustic ExtraTrees result of 0.472. See the
+[pretrained representation experiment](results/week6_pretrained/README.md).
+Downloaded weights and the 98 MB embedding cache are excluded from Git.

@@ -108,3 +108,5 @@ Because presentation is 60% of the course grade, update the story continuously:
 - [ ] Add per-breed reliability and confidence intervals during Week 7 interpretation work.
 - [x] Test one richer validation-selected acoustic model iteration: arousal did not improve; valence reached 0.472 macro F1 but the paired improvement interval includes zero.
 - [ ] Freeze further official-test model iteration; use nested development validation for pretrained representations and treat any later official evaluation as confirmatory, not a tuning loop.
+- [x] Complete the planned frozen human-speech representation comparison: wav2vec arousal reaches 0.507 and valence 0.439, with both paired improvement intervals crossing zero.
+- [ ] Treat the official set as closed after the planned model-family comparisons; evaluate Dog2vec/AVES with nested development validation before any final confirmatory score.
