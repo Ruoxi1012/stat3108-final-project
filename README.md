@@ -64,8 +64,8 @@ We will report Husky and Shiba results separately as well as pooled results. Acc
 
 - **Progress snapshot (2026-11-15):** the data audit, honest baselines, frozen
   wav2vec 2.0 comparison, and real-model confidence integration are implemented.
-  The strongest official point estimates are now 0.507 macro F1 for arousal
-  (wav2vec 2.0) and 0.472 for valence (richer acoustic ExtraTrees), but neither
+  The strongest official point estimates are now 0.535 macro F1 for arousal
+  (AVES-bio) and 0.472 for valence (richer acoustic ExtraTrees), but neither
   paired improvement interval excludes zero. With the predeclared 20%
   maximum validation error and at least 20 retained clips, neither arousal nor
   valence has a qualifying confidence threshold; all 200 official predictions
@@ -80,7 +80,8 @@ We will report Husky and Shiba results separately as well as pooled results. Acc
 - [x] Honest majority, random, MFCC-linear, and small Log-Mel CNN baselines (2026-10-27).
 - [x] Validation-only calibration, reliability metrics, and reliable/uncertain output tooling (synthetic-score verification, 2026-11-03).
 - [x] Frozen human-speech representation comparison using wav2vec 2.0 Base (2026-11-15).
-- [ ] Canine/bioacoustic pretrained comparison such as Dog2vec or AVES.
+- [x] Frozen bioacoustic representation comparison using AVES-bio (2026-11-15).
+- [ ] Canine-specific Dog2vec comparison in a compatible isolated fairseq environment.
 - [ ] Full paired original/noisy/enhanced classification experiment (the generation smoke example is complete).
 - [x] Real-model score export, calibrated confidence evaluation, and uncertain-output results (2026-11-15; strict policy abstains on all official clips).
 - [x] Richer acoustic feature/model iteration (2026-11-15; valence point estimate improved to 0.472, but its paired improvement interval includes zero; arousal did not improve).
@@ -180,3 +181,16 @@ improvement intervals include zero, and wav2vec valence remains below the richer
 acoustic ExtraTrees result of 0.472. See the
 [pretrained representation experiment](results/week6_pretrained/README.md).
 Downloaded weights and the 98 MB embedding cache are excluded from Git.
+
+## Frozen AVES-bio checkpoint
+
+The animal-vocalization representation comparison uses the official AVES-bio
+TorchAudio model, with embeddings computed one clip at a time to avoid its
+documented waveform-padding effect. Validation selects layer 6 mean+standard-
+deviation pooling with breed metadata for arousal. Official unseen-dog arousal
+macro F1 reaches a new best point estimate of **0.535**, with severe two-level
+errors reduced to 8.5%. Valence reaches **0.439**, below the richer acoustic
+ExtraTrees result of 0.472. The arousal paired improvement interval versus the
+Week 3 MFCC SVM is -0.025 to +0.113, so the gain remains promising rather than
+conclusive. See the [AVES-bio experiment](results/week6_aves_bio/README.md).
+The 369 MB weights and 98 MB local cache are ignored.

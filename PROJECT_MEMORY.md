@@ -133,6 +133,27 @@ Last updated: 2026-11-15
 - The downloaded 360 MB model and 98 MB resumable embedding cache remain local
   and ignored. Only code, compact results, and figures belong in Git.
 
+## Frozen AVES-bio checkpoint (2026-11-15)
+
+- The official AVES-bio TorchAudio encoder is loaded directly from its published
+  configuration and weights. Embeddings are computed with batch size one because
+  AVES documents that waveform padding changes valid-frame representations.
+- Development validation selects layer 6 mean+standard-deviation pooling plus
+  breed metadata and `C=0.0001` for arousal. Official unseen-dog macro F1 is
+  0.535 (95% bootstrap interval 0.465–0.602), a +0.046 point estimate over the
+  Week 3 MFCC SVM. The paired difference interval -0.025 to +0.113 includes zero.
+  Severe two-level arousal errors fall from 14.0% in the richer acoustic model
+  iteration to 8.5% with AVES-bio.
+- Valence selects layer 3 mean+standard-deviation pooling plus breed metadata and
+  `C=0.001`. Official macro F1 is 0.439 (0.364–0.505), below the richer acoustic
+  ExtraTrees point estimate of 0.472.
+- Current strongest point estimates are AVES-bio arousal 0.535 and richer-
+  acoustic valence 0.472. Neither establishes precise or deployable emotion
+  prediction, and further official-test iteration should stop.
+- The 369 MB AVES weights and 98 MB resumable embedding cache remain ignored.
+  Dog2vec has official weights but requires a separate legacy fairseq-compatible
+  environment; do not destabilize the pinned project environment to install it.
+
 ## Purpose and source of truth
 
 This file is the persistent, searchable memory for the STAT UN3108 (Applied Deep Learning and AI, Fall 2026, Section 001) final project. It summarizes two archived course documents:

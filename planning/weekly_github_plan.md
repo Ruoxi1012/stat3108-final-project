@@ -110,3 +110,5 @@ Because presentation is 60% of the course grade, update the story continuously:
 - [ ] Freeze further official-test model iteration; use nested development validation for pretrained representations and treat any later official evaluation as confirmatory, not a tuning loop.
 - [x] Complete the planned frozen human-speech representation comparison: wav2vec arousal reaches 0.507 and valence 0.439, with both paired improvement intervals crossing zero.
 - [ ] Treat the official set as closed after the planned model-family comparisons; evaluate Dog2vec/AVES with nested development validation before any final confirmatory score.
+- [x] Complete AVES-bio comparison with padding-safe batch-size-one extraction: arousal reaches the current best 0.535 macro F1; valence remains 0.439.
+- [ ] Close routine official-test iteration now that classical, CNN, human-speech, and bioacoustic families have been evaluated; run Dog2vec only as a separately declared final model-family comparison.
