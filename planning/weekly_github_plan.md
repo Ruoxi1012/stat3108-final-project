@@ -97,3 +97,18 @@ Because presentation is 60% of the course grade, update the story continuously:
 - End of Week 6: freeze the main result and claim.
 - End of Week 7: freeze error cases, limitation slide, and demo behavior.
 - Week 8 onward: rehearse for clarity and timing rather than adding uncontrolled models.
+
+## Week 6 checkpoint — 2026-11-15
+
+- [x] Export real per-clip scores from the same frozen MFCC SVM used for inference.
+- [x] Keep model fitting, temperature calibration, threshold selection, and official testing source-disjoint.
+- [x] Generate probabilities, reliable/uncertain states, reliability metrics, and risk-coverage curves.
+- [x] Preserve the strict-policy negative result: no threshold meets 20% validation error with 20 retained clips, so all official predictions are uncertain.
+- [ ] Team review, member-owned commit, and pull request; do not credit the AI-assisted working-tree changes to a teammate who has not reviewed them.
+- [ ] Add per-breed reliability and confidence intervals during Week 7 interpretation work.
+- [x] Test one richer validation-selected acoustic model iteration: arousal did not improve; valence reached 0.472 macro F1 but the paired improvement interval includes zero.
+- [ ] Freeze further official-test model iteration; use nested development validation for pretrained representations and treat any later official evaluation as confirmatory, not a tuning loop.
+- [x] Complete the planned frozen human-speech representation comparison: wav2vec arousal reaches 0.507 and valence 0.439, with both paired improvement intervals crossing zero.
+- [ ] Treat the official set as closed after the planned model-family comparisons; evaluate Dog2vec/AVES with nested development validation before any final confirmatory score.
+- [x] Complete AVES-bio comparison with padding-safe batch-size-one extraction: arousal reaches the current best 0.535 macro F1; valence remains 0.439.
+- [ ] Close routine official-test iteration now that classical, CNN, human-speech, and bioacoustic families have been evaluated; run Dog2vec only as a separately declared final model-family comparison.

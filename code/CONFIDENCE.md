@@ -1,4 +1,4 @@
-# Confidence-aware predictions (Cici, November 3)
+# Confidence-aware predictions (Cici, November 3; real integration November 15)
 
 This component supports the project's third innovation: return arousal/valence
 probabilities and decline uncertain predictions. It accepts three-class model
@@ -96,9 +96,25 @@ known. Low confidence is not a detector for all unusual sounds. Error can rise o
 new breeds or noisy audio. Calibration need not improve Brier/ECE on another set,
 and abstention need not improve risk at every coverage. Report those outcomes.
 
-Current verification uses synthetic scores only. No new EmotionalCanines result,
-accuracy gain, or calibrated model is claimed. Next: export held-out scores from
-one frozen baseline, fit separate policies per target, evaluate on untouched
-official clips and all paired audio conditions, and report per-breed reliability
-and risk/coverage alongside macro F1. Include uncertainty intervals before making
-comparative claims. Noise enhancement and pretrained encoders remain separate tasks.
+The real-data integration is now implemented in `confidence_experiment.py`.
+It trains each frozen MFCC linear SVM on the 956 Week 3 fit clips, divides the
+239 validation clips into disjoint calibration and threshold-selection subsets,
+and evaluates only after policy fitting on the 200 official unseen-dog clips:
+
+```bash
+python code/confidence_experiment.py \
+  --manifest results/local/audit/manifest.json \
+  --cache results/local/week3_features.npz \
+  --local-output results/local/week6_confidence \
+  --output results/week6_confidence
+```
+
+Under the predeclared 20% maximum validation error and minimum retained count of
+20, neither target has a qualifying threshold, so every official prediction is
+correctly returned as uncertain. Temperature scaling also fails to improve
+official-test NLL. This is a real negative result, not a software failure, and it
+must not be hidden by selecting a looser rule after seeing official labels. Next:
+report per-breed reliability, add uncertainty intervals, test the frozen policy
+on paired audio conditions, and decide any alternative coverage/risk objective
+using validation evidence only. Noise enhancement and pretrained encoders remain
+separate tasks.

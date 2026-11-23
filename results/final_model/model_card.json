@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "name": "Bark Beyond Identity final target-specific model",
+  "frozen_on": "2026-11-23",
+  "selection_rule": "Use the highest validation-selected point-estimate model already frozen for each target; do not run another official-test model search.",
+  "training_clips": 1195,
+  "official_test_clips": 200,
+  "targets": {
+    "arousal": {
+      "representation": "Frozen AVES-base-bio layer 6 mean+population-standard-deviation with Husky/Shiba metadata",
+      "head": "Class-balanced linear SVM, C=0.0001",
+      "official_macro_f1": 0.535,
+      "official_accuracy": 0.535,
+      "macro_f1_95_ci": [0.465, 0.602],
+      "week3_baseline_macro_f1": 0.490,
+      "paired_difference_95_ci": [-0.025, 0.113]
+    },
+    "valence": {
+      "representation": "MFCC plus multi-scale Log-Mel statistics, temporal deltas, four-region pooling, and Husky/Shiba metadata",
+      "head": "ExtraTrees, 250 trees, min_samples_leaf=3",
+      "official_macro_f1": 0.472,
+      "official_accuracy": 0.480,
+      "macro_f1_95_ci": [0.402, 0.541],
+      "week3_baseline_macro_f1": 0.419,
+      "paired_difference_95_ci": [-0.033, 0.137]
+    }
+  },
+  "confidence": {
+    "result": "The separately validated strict confidence policy found no qualifying threshold and abstained on every official clip.",
+    "demo_behavior": "The final model exposes uncalibrated score distributions as research output only and makes no reliable/uncertain claim."
+  },
+  "selection_caveat": "The presentation model combines the strongest already-observed target-specific official point estimates. A later five-fold-CV-selected RBF valence candidate reached 0.465 official accuracy and 0.462 macro F1, so it did not replace ExtraTrees. Since multiple official results have been inspected, treat final numbers as exploratory rather than a pristine test estimate.",
+  "intended_use": "Course research and reproducible analysis of unseen-dog generalization on EmotionalCanines.",
+  "not_for": [
+    "Veterinary diagnosis or welfare decisions",
+    "Claims about a dog's private emotional state",
+    "Unseen breeds beyond the two-value Husky/Shiba metadata scope"
+  ]
+}

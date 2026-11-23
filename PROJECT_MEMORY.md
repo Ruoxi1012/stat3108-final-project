@@ -1,13 +1,33 @@
 # STAT UN3108 Final Project - Durable Project Memory
 
-Last updated: 2026-10-18
+Last updated: 2026-11-23
+
+## Final accuracy and runnable-model checkpoint (2026-11-23)
+
+- A final accuracy-oriented iteration compared four valence candidates with
+  five-fold stratified development CV. AVES layer-3 mean+standard-deviation with
+  an RBF SVM (`C=3`, `gamma=0.0003`) was the most stable: mean fold macro F1
+  0.437 with standard deviation 0.009.
+- Its one frozen official confirmation reached 0.465 accuracy and 0.462 macro
+  F1, below the earlier richer-acoustic ExtraTrees result (0.480 accuracy, 0.472
+  macro F1). This is retained as evidence that development improvements do not
+  reliably transfer to unseen dogs.
+- The runnable presentation model uses the strongest already-observed target-
+  specific point estimates: AVES-bio arousal (0.535 accuracy and macro F1) plus
+  richer-acoustic ExtraTrees valence (0.480 accuracy, 0.472 macro F1). Because
+  multiple official iterations have been inspected, describe these as
+  exploratory best point estimates rather than a pristine held-out estimate.
+- `code/final_model.py` exports both fitted heads to an ignored local bundle and
+  runs unified one-WAV inference. Displayed score distributions are explicitly
+  uncalibrated research outputs; the strict validated confidence policy still
+  abstains on all official clips.
 
 ## Active team and repository
 
 - Public GitHub repository: `https://github.com/Ruoxi1012/stat3108-final-project`
 - Default branch: `main`
 - Team members: Ruoxi Zhao and Cici Zeng
-- Current repository state as of 2026-09-18: initial course-required directory scaffold exists; README project title, overview, and goal/question are not yet filled in.
+- Current repository state as of 2026-11-15: Week 2 data/audit work, Cici's confidence-output infrastructure, and Ruoxi's Week 3 baseline experiment are integrated on the current branch. The Week 6 real-model confidence experiment is implemented locally and awaits team review/commit ownership.
 - Preserve visible, meaningful contributions from both members through feature branches, pull requests, and commits over time.
 
 ## Selected project direction (recorded 2026-10-11)
@@ -17,7 +37,7 @@ Last updated: 2026-10-18
 - Primary benchmark: EmotionalCanines (ACM MM 2025), which provides 1,400 vocalization sequences from 199 Huskies and Shiba Inus and official tests containing dogs not present in training.
 - Central research gap: high results from clip-level or augmentation-heavy splits may reflect dog, breed, source, or duplicated-audio cues rather than affect; generalization to unseen dogs and breeds is still weak.
 - Confirmed innovation plan: (1) paired original/noisy/enhanced audio experiments, (2) evaluation on unseen dogs and cross-breed transfer without claiming coverage of every breed, and (3) confidence-aware output containing the predicted state, class probabilities, and a validation-calibrated reliable/uncertain decision.
-- Current phase: data pipeline and audit complete; baseline modeling is next. No model results have been produced yet.
+- Current phase: data pipeline, audit, honest Week 3 baselines, and real-model confidence integration are complete. Cross-breed evaluation, paired robustness classification, interpretation, and presentation work are next.
 
 ## Week 2 checkpoint (2026-10-18)
 
@@ -36,6 +56,123 @@ Last updated: 2026-10-18
 - The clean Python environment and four audio-pipeline tests pass. A three-slide
   presentation checkpoint covers motivation, the official split and audit, and
   the paired-noise design.
+
+## Week 3 checkpoint (2026-10-27)
+
+- The fixed clip-level development split uses seed 3108 and stratifies by breed
+  plus the joint arousal/valence label: 956 fit, 239 validation, and 200 untouched
+  official-test clips. It is not described as dog-disjoint because public dog and
+  source IDs are unavailable.
+- Implemented baselines: majority, 20-seed stratified random, MFCC summary with
+  logistic regression, MFCC summary with linear SVM, and a small multi-task
+  Log-Mel CNN with three training seeds.
+- On the official unseen-dog test, MFCC linear SVM is the strongest Week 3 model:
+  pooled macro F1 is 0.490 for arousal and 0.419 for valence. The CNN reaches
+  0.424 ± 0.064 and 0.354 ± 0.026, respectively, and therefore does not beat the
+  simpler baseline.
+- Classical regularization and CNN epoch counts are selected on validation only.
+  Classical models are refit on all 1,195 eligible training clips; CNNs are
+  retrained for validation-selected epoch counts. Official-test labels are not
+  used for tuning.
+- Checked-in results contain the exact split, raw metrics, per-breed summaries,
+  confusion matrices, protocol/package metadata, and a presentation-ready plot.
+  The local 32 MB feature cache and all audio remain ignored.
+- All eight tests pass. Remaining work includes bootstrap intervals, official
+  duplicate-sensitivity analysis, and the Week 4 cross-breed matrix.
+
+## Confidence checkpoint (2026-11-03; integrated 2026-11-08)
+
+- Cici's pull request #6 added validation-only temperature scaling, NLL/Brier/ECE
+  metrics, tie-aware abstention threshold selection, risk/coverage output, and a
+  CLI that returns class probabilities plus reliable/uncertain decisions.
+- Leakage and model-identity checks require disjoint fitting, calibration, and
+  threshold-selection source IDs. The implementation and CLI have synthetic
+  tests, but no real EmotionalCanines calibration result is claimed yet.
+- The next dependency is per-clip score export from one frozen classifier. A
+  classifier refit on calibration clips cannot use a policy learned from those
+  same clips, so the Week 3 refit protocol needs a separate integration path.
+- Pull request #5 was synchronized with the newer `main` on 2026-11-08 so the
+  baseline and confidence components can be reviewed together without dropping
+  either team member's work.
+
+## Week 6 real-model confidence checkpoint (2026-11-15)
+
+- A deterministic integration path trains the frozen Week 3 MFCC linear SVM
+  (`C=0.01`) on 956 fit clips, then divides the 239 validation clips into 119
+  temperature-calibration and 120 threshold-selection clips. All four source-ID
+  groups, including the 200 official test clips, are disjoint.
+- Under the predeclared maximum validation error of 20% and minimum retained
+  count of 20, neither arousal nor valence has a qualifying threshold. The honest
+  official output is therefore `uncertain` for every clip rather than a forced
+  reliability claim.
+- Temperature scaling did not improve official-test NLL: arousal changed from
+  1.015 to 1.016 and valence from 1.067 to 1.071. This is a negative result and
+  not evidence that calibration is generally ineffective.
+- Raw per-clip score exports remain ignored under `results/local/`; the checked-in
+  artifacts are policies, compact examples, a summary table, a risk-coverage
+  figure, and exact reproduction instructions.
+- Do not loosen the risk rule using official labels. Any alternative policy must
+  be declared from validation evidence and presented as a separate iteration.
+
+## Week 6 richer-model iteration (2026-11-15)
+
+- A validation-only candidate search added multi-scale Log-Mel distribution
+  statistics, temporal deltas, four-region pooling, and the known Husky/Shiba
+  indicator. It selected a strongly regularized linear SVM for arousal and an
+  ExtraTrees classifier for valence before the official evaluation.
+- Official unseen-dog arousal macro F1 was 0.485 (95% bootstrap interval
+  0.414–0.553), effectively unchanged from the Week 3 MFCC SVM's 0.490.
+- Official unseen-dog valence macro F1 was 0.472 (0.402–0.541), a +0.053 point
+  estimate over 0.419. The paired difference interval was -0.033 to +0.137 and
+  includes zero, so the improvement is not statistically clear on these clips.
+- The result reinforces the core finding: validation improvements do not
+  reliably transfer to unseen dogs. Do not claim precise emotion prediction.
+- Because the official result has now been inspected for this iteration, do not
+  repeatedly select new feature/model variants against it. Future representation
+  work should use nested development evaluation and reserve new external or
+  instructor-approved evidence for final confirmation.
+
+## Frozen wav2vec 2.0 checkpoint (2026-11-15)
+
+- The planned human-speech representation experiment uses torchaudio's 94M-
+  parameter wav2vec 2.0 Base model, pretrained on LibriSpeech and kept frozen.
+  Twelve encoder layers are pooled to valid-frame mean/standard-deviation
+  features; layer, pooling, breed metadata, and linear-SVM regularization are
+  selected only on the fixed development validation split.
+- The selected arousal representation is layer 3 mean+standard deviation with
+  no breed feature and `C=0.0001`. Official unseen-dog macro F1 is 0.507 (95%
+  bootstrap interval 0.435–0.575), +0.017 versus the Week 3 MFCC SVM; the paired
+  difference interval -0.057 to +0.093 includes zero.
+- The selected valence representation is layer 12 mean pooling with no breed
+  feature and `C=0.01`. Official macro F1 is 0.439 (0.367–0.506), +0.020 versus
+  Week 3; the paired interval -0.066 to +0.109 includes zero. It is below the
+  richer acoustic ExtraTrees point estimate of 0.472.
+- Current strongest point estimates by target are therefore wav2vec arousal
+  0.507 and richer-acoustic valence 0.472. These are not precise emotion reading,
+  and neither improvement has a paired interval excluding zero.
+- The downloaded 360 MB model and 98 MB resumable embedding cache remain local
+  and ignored. Only code, compact results, and figures belong in Git.
+
+## Frozen AVES-bio checkpoint (2026-11-15)
+
+- The official AVES-bio TorchAudio encoder is loaded directly from its published
+  configuration and weights. Embeddings are computed with batch size one because
+  AVES documents that waveform padding changes valid-frame representations.
+- Development validation selects layer 6 mean+standard-deviation pooling plus
+  breed metadata and `C=0.0001` for arousal. Official unseen-dog macro F1 is
+  0.535 (95% bootstrap interval 0.465–0.602), a +0.046 point estimate over the
+  Week 3 MFCC SVM. The paired difference interval -0.025 to +0.113 includes zero.
+  Severe two-level arousal errors fall from 14.0% in the richer acoustic model
+  iteration to 8.5% with AVES-bio.
+- Valence selects layer 3 mean+standard-deviation pooling plus breed metadata and
+  `C=0.001`. Official macro F1 is 0.439 (0.364–0.505), below the richer acoustic
+  ExtraTrees point estimate of 0.472.
+- Current strongest point estimates are AVES-bio arousal 0.535 and richer-
+  acoustic valence 0.472. Neither establishes precise or deployable emotion
+  prediction, and further official-test iteration should stop.
+- The 369 MB AVES weights and 98 MB resumable embedding cache remain ignored.
+  Dog2vec has official weights but requires a separate legacy fairseq-compatible
+  environment; do not destabilize the pinned project environment to install it.
 
 ## Purpose and source of truth
 
