@@ -1,6 +1,26 @@
 # STAT UN3108 Final Project - Durable Project Memory
 
-Last updated: 2026-11-15
+Last updated: 2026-11-23
+
+## Final accuracy and runnable-model checkpoint (2026-11-23)
+
+- A final accuracy-oriented iteration compared four valence candidates with
+  five-fold stratified development CV. AVES layer-3 mean+standard-deviation with
+  an RBF SVM (`C=3`, `gamma=0.0003`) was the most stable: mean fold macro F1
+  0.437 with standard deviation 0.009.
+- Its one frozen official confirmation reached 0.465 accuracy and 0.462 macro
+  F1, below the earlier richer-acoustic ExtraTrees result (0.480 accuracy, 0.472
+  macro F1). This is retained as evidence that development improvements do not
+  reliably transfer to unseen dogs.
+- The runnable presentation model uses the strongest already-observed target-
+  specific point estimates: AVES-bio arousal (0.535 accuracy and macro F1) plus
+  richer-acoustic ExtraTrees valence (0.480 accuracy, 0.472 macro F1). Because
+  multiple official iterations have been inspected, describe these as
+  exploratory best point estimates rather than a pristine held-out estimate.
+- `code/final_model.py` exports both fitted heads to an ignored local bundle and
+  runs unified one-WAV inference. Displayed score distributions are explicitly
+  uncalibrated research outputs; the strict validated confidence policy still
+  abstains on all official clips.
 
 ## Active team and repository
 

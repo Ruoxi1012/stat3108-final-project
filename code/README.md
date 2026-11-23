@@ -123,4 +123,18 @@ written to `results/week3_baselines/`.
 
 See [CONFIDENCE.md](CONFIDENCE.md) for validation-only calibration, empirical
 abstention thresholds, the model score export contract, and CLI commands. These
-tools prepare the reliable/uncertain output; real model integration is pending.
+tools support the completed Week 6 real-model experiment. Under the predeclared
+20% maximum validation error and minimum 20 retained clips, no threshold
+qualified, so all official predictions were honestly marked uncertain.
+
+## Final accuracy iteration and runnable model
+
+`final_selection.py` records the five-fold development comparison and frozen
+official confirmation for the last accuracy-oriented valence iteration. The
+development-selected RBF SVM did not beat the earlier ExtraTrees point estimate
+on unseen dogs; this negative result is retained in `results/final_selection/`.
+
+`final_model.py` packages the strongest already-observed target-specific heads
+(AVES-bio arousal and richer-acoustic valence) behind one training and inference
+interface. The fitted bundle remains in ignored `results/local/`; its checked-in
+model card and exact commands are in `results/final_model/`.

@@ -1,0 +1,112 @@
+{
+  "manifest_sha256": "df817b4747aa6e82ab668491e5927a8b9647f96c52da9a48298f66873a64f61d",
+  "selection_protocol": "five-fold development CV; official confirmation after freeze",
+  "cv_folds": 5,
+  "seed": 3108,
+  "development_valence_candidates": [
+    {
+      "name": "acoustic_extra_trees",
+      "feature": "acoustic",
+      "fold_macro_f1": [
+        0.47175301345863513,
+        0.4109477124183007,
+        0.40269406294694915,
+        0.39921703726902596,
+        0.4570409771473602
+      ],
+      "mean_macro_f1": 0.42833056064805425,
+      "sd_macro_f1": 0.030055908218349955,
+      "oof_macro_f1": 0.4293386254339402,
+      "oof_accuracy": 0.4510460251046025
+    },
+    {
+      "name": "aves_l3_linear_svm",
+      "feature": "aves_l3",
+      "fold_macro_f1": [
+        0.4364467838482488,
+        0.43255142318538303,
+        0.424043383067264,
+        0.39056227271186766,
+        0.4242251428792703
+      ],
+      "mean_macro_f1": 0.42156580113840675,
+      "sd_macro_f1": 0.01622687168725843,
+      "oof_macro_f1": 0.42277572319214113,
+      "oof_accuracy": 0.43347280334728033
+    },
+    {
+      "name": "aves_acoustic_extra_trees",
+      "feature": "fusion",
+      "fold_macro_f1": [
+        0.4884353741496598,
+        0.39642261652880645,
+        0.4270078480983373,
+        0.42423347717465365,
+        0.42127410069993804
+      ],
+      "mean_macro_f1": 0.43147468333027905,
+      "sd_macro_f1": 0.030494613475996,
+      "oof_macro_f1": 0.4338733978097295,
+      "oof_accuracy": 0.4794979079497908
+    },
+    {
+      "name": "aves_l3_rbf_svm",
+      "feature": "aves_l3",
+      "fold_macro_f1": [
+        0.4448123262029193,
+        0.42671477863873725,
+        0.4426278469866969,
+        0.4268584792995367,
+        0.4458290776626807
+      ],
+      "mean_macro_f1": 0.4373685017581141,
+      "sd_macro_f1": 0.008701895972942622,
+      "oof_macro_f1": 0.4388031836121944,
+      "oof_accuracy": 0.4535564853556485
+    }
+  ],
+  "selected": {
+    "arousal": {
+      "family": "linear_svm",
+      "layer": 6,
+      "pooling": "mean_std",
+      "include_breed": true,
+      "C": 0.0001
+    },
+    "valence": {
+      "family": "rbf_svm",
+      "C": 3.0,
+      "gamma": 0.0003
+    }
+  },
+  "official_results": [
+    {
+      "target": "arousal",
+      "n": 200,
+      "accuracy": 0.535,
+      "macro_f1": 0.5354713494834091,
+      "balanced_accuracy": 0.5355042966983266,
+      "mae": 0.55,
+      "quadratic_weighted_kappa": 0.45065425552206917,
+      "severe_error_rate": 0.085,
+      "macro_f1_95_ci": [
+        0.4653193521174805,
+        0.6024138333243049
+      ]
+    },
+    {
+      "target": "valence",
+      "n": 200,
+      "accuracy": 0.465,
+      "macro_f1": 0.46247415860415114,
+      "balanced_accuracy": 0.46457108397406904,
+      "mae": 0.685,
+      "quadratic_weighted_kappa": 0.24440012273703593,
+      "severe_error_rate": 0.15,
+      "macro_f1_95_ci": [
+        0.38863123341227884,
+        0.5286939761152091
+      ]
+    }
+  ]
+}

@@ -85,6 +85,7 @@ We will report Husky and Shiba results separately as well as pooled results. Acc
 - [ ] Full paired original/noisy/enhanced classification experiment (the generation smoke example is complete).
 - [x] Real-model score export, calibrated confidence evaluation, and uncertain-output results (2026-11-15; strict policy abstains on all official clips).
 - [x] Richer acoustic feature/model iteration (2026-11-15; valence point estimate improved to 0.472, but its paired improvement interval includes zero; arousal did not improve).
+- [x] Final five-fold accuracy iteration and runnable target-specific model (2026-11-23).
 - [ ] Robustness, ablations, and error analysis.
 - [ ] Demo, presentation, and two-page report.
 
@@ -194,3 +195,20 @@ ExtraTrees result of 0.472. The arousal paired improvement interval versus the
 Week 3 MFCC SVM is -0.025 to +0.113, so the gain remains promising rather than
 conclusive. See the [AVES-bio experiment](results/week6_aves_bio/README.md).
 The 369 MB weights and 98 MB local cache are ignored.
+
+## Final accuracy iteration and runnable model
+
+The final development comparison used five-fold stratified CV rather than one
+validation split. An AVES layer-3 RBF SVM was the most stable valence candidate
+(0.437 ± 0.009 fold macro F1), but its frozen official result was 0.465 accuracy
+and 0.462 macro F1—below the earlier richer-acoustic ExtraTrees result of 0.480
+accuracy and 0.472 macro F1. This negative transfer result is preserved in the
+[full final-selection record](results/final_selection/README.md).
+
+For the presentation demo, the runnable [final target-specific model](results/final_model/README.md)
+therefore uses the strongest already-observed point estimate for each target:
+AVES-bio arousal (0.535 accuracy/macro F1) and richer-acoustic valence (0.480
+accuracy, 0.472 macro F1). Since several official iterations have been viewed,
+these are explicitly exploratory best point estimates, not a pristine final-test
+guarantee. The local bundle and one-WAV CLI are reproducible without committing
+audio, caches, weights, or fitted estimators.
